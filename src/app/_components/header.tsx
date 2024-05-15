@@ -1,33 +1,66 @@
+"use client";
+
 import { RailwayLogo } from "@/icons/railway-logo";
 import { RailwayLogoType } from "@/icons/railway-logo-type";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
+  const path = usePathname();
+
   return (
     <div className="flex justify-between   items-center py-4 ">
       <Link href="/">
-        <RailwayLogoType className="w-32 h-12 aspect-video hidden sm:block" />
-        <RailwayLogo className="w-32 h-12 sm:hidden" />
+        <RailwayLogo
+          className={!path.startsWith("/dashboard") ? "w-12 h-12" : "w-8 h-8"}
+        />
       </Link>
       <div>
-        <nav className="flex space-x-6">
-          {NavConfig.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-muted"
-            >
-              {item.name}
-              {item.number && (
-                <span className="bg-accent_2 text-accent_1 rounded-full py-[2px] px-[4px] text-xs mb-1 -mr-2 ml-1">
-                  {item.number}
-                </span>
-              )}
-            </a>
-          ))}
+        {/* TODO */}
+        <nav className="hidden space-x-6 sm:flex">
+          {!path.startsWith("/dashboard") &&
+            NavConfig.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="text-sm font-medium text-muted-foreground hover:text-muted"
+              >
+                {item.name}
+                {item.number && (
+                  <span className="bg-accent_2 text-accent_1 rounded-full py-[2px] px-[4px] text-xs mb-1 -mr-2 ml-1">
+                    {item.number}
+                  </span>
+                )}
+              </a>
+            ))}
         </nav>
       </div>
     </div>
+  );
+};
+
+const MobileNav = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem>Billing</DropdownMenuItem>
+        <DropdownMenuItem>Team</DropdownMenuItem>
+        <DropdownMenuItem>Subscription</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -62,7 +95,7 @@ const NavConfig = [
     href: "https://railway.app/pricing",
   },
   {
-    name: "Login",
-    href: "/login",
+    name: "Dashboard",
+    href: "/dashboard",
   },
 ];

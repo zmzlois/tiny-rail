@@ -24,6 +24,7 @@ export default function RootLayout({
           "flex flex-col min-h-screen container mx-auto"
         )}
       >
+        <Header />
         {children}
       </body>
     </html>

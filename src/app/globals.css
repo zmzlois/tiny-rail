@@ -110,9 +110,9 @@
   }
 
   h1 {
-    @apply text-6xl font-bold text-muted;
+    @apply sm:text-6xl text-4xl font-bold text-muted;
   }
   h2 {
-    @apply text-2xl text-base text-muted-foreground;
+    @apply sm:text-3xl text-base leading-tight text-muted-foreground;
   }
 }
