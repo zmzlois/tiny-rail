@@ -2,32 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background: 256.36, 24.44%, 8.82%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+
+    --radius: 0.5rem;
+    --accent-1: 270.57, 54.08%, 38.43%;
+    --accent-2: 271.3, 37.7%, 11.96%;
+    --hero-gradient: linear-gradient(
+        327.21deg,
+        rgba(33, 0, 75, 0.24) 3.65%,
+        rgba(60, 0, 136, 0) 40.32%
+      ),
+      linear-gradient(
+        245.93deg,
+        rgba(209, 21, 111, 0.16) 0%,
+        rgba(209, 25, 80, 0) 36.63%
+      ),
+      linear-gradient(
+        147.6deg,
+        rgba(58, 19, 255, 0) 29.79%,
+        rgba(98, 19, 255, 0.01) 85.72%
+      ),
+      #13111c;
+  }
+
+  .dark {
+    --background: 256.36, 24.44%, 8.82%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --hero-gradient: linear-gradient(
+        327.21deg,
+        rgba(33, 0, 75, 0.24) 3.65%,
+        rgba(60, 0, 136, 0) 40.32%
+      ),
+      linear-gradient(
+        245.93deg,
+        rgba(209, 21, 111, 0.16) 0%,
+        rgba(209, 25, 80, 0) 36.63%
+      ),
+      linear-gradient(
+        147.6deg,
+        rgba(58, 19, 255, 0) 29.79%,
+        rgba(98, 19, 255, 0.01) 85.72%
+      ),
+      #13111c;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  h1 {
+    @apply text-6xl font-bold text-muted;
+  }
+  h2 {
+    @apply text-2xl text-base text-muted-foreground;
   }
 }
