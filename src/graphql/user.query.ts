@@ -31,16 +31,28 @@ export const userProjectQuery = `query Projects {
     projects {
         edges {
             node {
-                baseEnvironmentId
                 description
-                expiredAt
                 id
                 name
-                subscriptionPlanLimit
-                subscriptionType
                 updatedAt
+                services {
+                    edges {
+                        node {
+                            id
+                            deployments {
+                                edges {
+                                    node {
+                                        staticUrl
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+
 `

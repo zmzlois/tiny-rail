@@ -11,7 +11,6 @@ export async function GET(req: any) {
     // Run the cors middleware
     await cors(req);
 
-    let data: any;
 
     const url = new URL(process.env.RAILWAY_API!);
 
@@ -24,15 +23,13 @@ export async function GET(req: any) {
     const header = new Headers(headers)
 
     try {
-        const res = await fetch("https://backboard.railway.app/graphql/v2", {
+        const res = await fetch(url, {
             method: 'POST',
             headers: header,
             body: JSON.stringify({ query: userProjectQuery, variables: {} }),
             next: { revalidate: 10 },
         })
         const data = await res.json()
-
-        console.log("backend data", data.data)
 
 
         return Response.json({
@@ -43,7 +40,7 @@ export async function GET(req: any) {
         })
 
     } catch (err) {
-        console.log("/api/user [error]", err)
+        console.log("/api/project [error]", err)
         return Response.json({
             status: 400,
             message: "error",

@@ -112,8 +112,8 @@ const DashboardButton = ({ path }: { path: string }) => {
     },
   });
 
-  if (isLoading) return <h2>Loading...</h2>;
-  if (error) return <h2>Error: {error.message}</h2>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   const workspaceId = user["data"]["me"]["id"];
 
@@ -129,7 +129,7 @@ const DashboardButton = ({ path }: { path: string }) => {
   };
   return (
     <Link
-      href={`/dashboard?workspaceId=${workspaceId}`}
+      href={`/dashboard`}
       className="text-sm font-medium text-muted-foreground hover:text-muted"
     >
       Dashboard
