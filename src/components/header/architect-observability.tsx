@@ -11,8 +11,8 @@ export const ArchitectObservability = () => {
     router.push(path + "/logs");
   }
   return (
-    <div className=" text-white">
-      <Tabs defaultValue="architecture" className="w-[400px]">
+    <div className=" text-white ">
+      <Tabs defaultValue="architecture" className="w-[400px] ">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="architecture" onClick={() => router.back()}>
             Architecture

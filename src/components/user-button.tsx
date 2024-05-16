@@ -11,6 +11,7 @@ import {
 import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { SignOut } from "./auth/sign-out";
 
 export const UserButton = () => {
   const user = useStore();
@@ -33,6 +34,10 @@ export const UserButton = () => {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>{user.name}</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <SignOut />
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

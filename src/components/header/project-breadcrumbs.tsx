@@ -15,7 +15,7 @@ export const ProjectBreadcrumb = () => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">
-            <RailwayLogo className="w-8 h-8" />
+            <RailwayLogo className="w-10 h-10 my-4" />
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>

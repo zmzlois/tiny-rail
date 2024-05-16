@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { RailwayLogo } from "@/icons/railway-logo";
 import { RailwayLogoType } from "@/icons/railway-logo-type";
 import Link from "next/link";
+import type { User } from "next-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,19 +18,42 @@ import { usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
+import { auth } from "@/auth";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { SignIn } from "./auth/sign-in";
+import { UserButton } from "./user-button";
+import { ProjectBreadcrumb } from "./header/project-breadcrumbs";
+import { ArchitectObservability } from "./header/architect-observability";
 
-export const Header = () => {
+export const Header = ({ user }: { user?: User | undefined }) => {
   const path = usePathname();
 
   return (
-    <div className="flex justify-between container mx-auto  items-center p-4 ">
-      <Link href="/">
-        <RailwayLogo className={"w-10 h-10 my-4"} />
-      </Link>
+    <div
+      className={cn(
+        "flex justify-between container mx-auto  items-center p-4 "
+      )}
+    >
+      {path.startsWith("/project") ? (
+        <ProjectBreadcrumb />
+      ) : (
+        <Link href="/">
+          <RailwayLogo className={"w-10 h-10 my-4"} />
+        </Link>
+      )}
+      {path.startsWith("/project") && <ArchitectObservability />}
 
       {/* TODO */}
       <div className="flex space-x-6">
-        {path.length < 2 &&
+        {(path.length < 2 || path === "/login") &&
           NavConfig.map((item) => (
             <a
               key={item.name}
@@ -44,7 +68,7 @@ export const Header = () => {
               )}
             </a>
           ))}
-        <DashboardButton path={path} />
+        <DashboardButton user={user} />
       </div>
     </div>
   );
@@ -66,47 +90,41 @@ const MobileNav = () => {
   );
 };
 
-const DashboardButton = ({ path }: { path: string }) => {
-  const updateUser = useStore((state) => {
-    return {
-      name: state.updateName,
-      avatar: state.updateAvatar,
-      hobbyPlan: state.updateIsOnHobbyPlan,
-    };
-  });
-  const {
-    data: user,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const res = await fetch("/api/user");
-
-      const data = await res.json();
-      const me = user["data"]["me"];
-
-      updateUser.name(me["name"]);
-      updateUser.avatar(me["avatar"]);
-      updateUser.hobbyPlan(me["isOnHobbyPlan"]);
-
-      console.log("data", data["data"]["me"]);
-      return data;
-    },
-  });
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
+const DashboardButton = ({ user }: { user?: User | undefined }) => {
   // FIXME: once on dashboard this button needs to switch to user button
 
+  const path = usePathname();
   return (
-    <Link
-      href={`/dashboard`}
-      className="text-sm font-medium text-muted-foreground hover:text-primary"
-    >
-      Dashboard
-    </Link>
+    <>
+      {user ? (
+        path.length > 2 ? (
+          <UserButton />
+        ) : (
+          <Link
+            href={`/dashboard`}
+            className="text-sm font-medium text-muted-foreground hover:text-primary"
+          >
+            {"Dashboard"}
+          </Link>
+        )
+      ) : (
+        <Dialog>
+          <DialogTrigger>
+            <p className="text-sm font-medium text-muted-foreground hover:text-muted">
+              Login
+            </p>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader className="flex flex-col items-center gap-10">
+              <DialogTitle className="text-4xl">Login</DialogTitle>
+              <DialogDescription>
+                <SignIn />
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

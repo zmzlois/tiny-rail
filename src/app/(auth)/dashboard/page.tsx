@@ -1,6 +1,6 @@
 "use client";
 
-import { ProjectSection } from "@/app/dashboard/_components/project-section";
+import { ProjectSection } from "./_components/project-section";
 import { SelectWorkspace } from "./_components/select-workspace";
 import { CreateProject } from "./_components/create-project";
 
