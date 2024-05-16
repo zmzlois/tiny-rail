@@ -10,8 +10,6 @@ export const ProjectSection = () => {
 
       const data = await res.json();
 
-      console.log("data", data["data"]);
-
       return data["data"]["projects"]["edges"];
     },
   });

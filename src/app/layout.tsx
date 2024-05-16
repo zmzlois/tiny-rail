@@ -21,10 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <QueryProvider>
         <body
-          className={cn(
-            inter.className,
-            "flex flex-col min-h-screen dark container mx-auto"
-          )}
+          className={cn(inter.className, "flex flex-col min-h-screen dark")}
         >
           <Header />
           {children}

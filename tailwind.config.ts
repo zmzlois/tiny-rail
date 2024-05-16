@@ -63,6 +63,9 @@ const config = {
         }
 
       },
+      backgroundImage: {
+        "dot-pattern": "url('/polka-dots.svg')",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

@@ -3,7 +3,7 @@ import { HeroSection } from "../components/hero";
 
 export default function Home() {
   return (
-    <main className="flex flex-col ">
+    <main className="flex flex-col container mx-auto">
       <HeroSection />
     </main>
   );

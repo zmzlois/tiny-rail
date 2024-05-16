@@ -6,5 +6,5 @@ import { client } from "@/graphql/client";
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div>{children}</div>;
+  return <div className="container mx-auto">{children}</div>;
 }

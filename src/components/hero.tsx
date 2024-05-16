@@ -19,7 +19,7 @@ export const HeroSection = async () => {
             href="/new"
             className="bg-gradient-to-r from-purple-800/80 via-purple-800 to-accent_1 sm:w-1/3  rounded-lg items-center p-4"
           >
-            <p className="text-secondary text-center">Start a New Project</p>
+            <p className="text-primary text-center">Start a New Project</p>
           </Link>
         </div>
       </div>

@@ -6,14 +6,11 @@ export const ProjectCard = ({ project }: { project: Project }) => {
     );
   }) as unknown as string[];
 
-  console.log("static url", staticUrl);
-
-  console.log("staticUrl", staticUrl);
   const serviceCount = project.node.services.edges.length;
   return (
     <Link
       href={`/project/${project.node.id}`}
-      className="rounded-lg bg-zinc-800/60 hover:bg-zinc-800/80 group border p-4 py-8 flex flex-col gap-16 md:w-[calc(20%-1rem)] w-[80vw]"
+      className="rounded-lg bg-zinc-800/60 hover:bg-zinc-800/80 group border p-4 py-8 flex flex-col gap-16 lg:w-[calc(30%-1rem)] sm:w-[30%] w-[90%]  "
     >
       <h3 className="text-lg text-foreground/80 group:hover:text-foreground">
         {project.node.name}

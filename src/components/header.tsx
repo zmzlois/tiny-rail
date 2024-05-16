@@ -27,14 +27,14 @@ export const Header = () => {
   const path = usePathname();
 
   return (
-    <div className="flex justify-between   items-center p-4 ">
+    <div className="flex justify-between container mx-auto  items-center p-4 ">
       <Link href="/">
-        <RailwayLogo className={"w-8 h-8"} />
+        <RailwayLogo className={"w-10 h-10 my-4"} />
       </Link>
 
       {/* TODO */}
       <div className="flex space-x-6">
-        {!path.startsWith("/dashboard") &&
+        {path.length < 2 &&
           NavConfig.map((item) => (
             <a
               key={item.name}
@@ -130,7 +130,7 @@ const DashboardButton = ({ path }: { path: string }) => {
   return (
     <Link
       href={`/dashboard`}
-      className="text-sm font-medium text-muted-foreground hover:text-muted"
+      className="text-sm font-medium text-muted-foreground hover:text-primary"
     >
       Dashboard
     </Link>
