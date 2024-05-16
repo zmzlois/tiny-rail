@@ -9,6 +9,7 @@ query User {
         id
         name
         username
+        isOnHobbyPlan
         customer {
             teamId
             userId

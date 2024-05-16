@@ -23,7 +23,6 @@ export default function RootLayout({
         <body
           className={cn(inter.className, "flex flex-col min-h-screen dark")}
         >
-          <Header />
           {children}
         </body>
       </QueryProvider>

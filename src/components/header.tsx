@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-
+import { useEffect } from "react";
 import { RailwayLogo } from "@/icons/railway-logo";
 import { RailwayLogoType } from "@/icons/railway-logo-type";
 import Link from "next/link";
@@ -15,13 +15,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-
-type UserProps = {
-  id: string;
-  avatar: string;
-  name: string;
-  teams: string[];
-};
+import { UserProps } from "@/lib/user";
+import { useStore } from "@/store/user";
 
 export const Header = () => {
   const path = usePathname();
@@ -71,32 +66,14 @@ const MobileNav = () => {
   );
 };
 
-const UserButton = ({ user }: { user: UserProps }) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <div className="flex items-center space-x-4">
-          <div>
-            <img
-              src={user.avatar}
-              alt="avatar"
-              className="w-8 h-8 border-2 rounded-full z-0"
-            />
-            <span className="bg-gradient-to-br from-purple-700 to-blue-500 text-white w-2 y-2 z-10 rounded-lg" />
-          </div>
-          <ChevronDownIcon className="w-5 h-5" />
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>{user.name}</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
-
 const DashboardButton = ({ path }: { path: string }) => {
+  const updateUser = useStore((state) => {
+    return {
+      name: state.updateName,
+      avatar: state.updateAvatar,
+      hobbyPlan: state.updateIsOnHobbyPlan,
+    };
+  });
   const {
     data: user,
     error,
@@ -107,7 +84,13 @@ const DashboardButton = ({ path }: { path: string }) => {
       const res = await fetch("/api/user");
 
       const data = await res.json();
+      const me = user["data"]["me"];
 
+      updateUser.name(me["name"]);
+      updateUser.avatar(me["avatar"]);
+      updateUser.hobbyPlan(me["isOnHobbyPlan"]);
+
+      console.log("data", data["data"]["me"]);
       return data;
     },
   });
@@ -115,18 +98,8 @@ const DashboardButton = ({ path }: { path: string }) => {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  const workspaceId = user["data"]["me"]["id"];
-
-  const me = user["data"]["me"];
-
   // FIXME: once on dashboard this button needs to switch to user button
 
-  const userData: UserProps = {
-    id: me["id"],
-    avatar: me["avatar"],
-    name: me["name"],
-    teams: me["teams"],
-  };
   return (
     <Link
       href={`/dashboard`}
