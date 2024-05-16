@@ -12,7 +12,7 @@ export async function GET(req: any) {
     await cors(req);
 
 
-    const url = process.env.RAILWAY_API!;
+
     const headers = {
         "Authorization": `Bearer ${token}`,
         "Accept": "*/*",
@@ -22,7 +22,7 @@ export async function GET(req: any) {
     const header = new Headers(headers)
 
     try {
-        const res = await fetch(url, {
+        const res = await fetch("https://backboard.railway.app/graphql/v2", {
             method: 'POST',
             headers: header,
             body: JSON.stringify({ query: userQuery, variables: {} }),
