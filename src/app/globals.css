@@ -110,9 +110,13 @@
   }
 
   h1 {
-    @apply sm:text-6xl text-4xl font-bold text-muted;
+    @apply sm:text-6xl text-4xl font-bold text-primary;
   }
   h2 {
     @apply sm:text-3xl text-base leading-tight text-muted-foreground;
+  }
+
+  p {
+    @apply text-primary/60 text-sm;
   }
 }

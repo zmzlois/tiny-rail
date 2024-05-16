@@ -6,5 +6,5 @@ import { client } from "@/graphql/client";
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <Provider client={client}>{children}</Provider>;
+  return <div>{children}</div>;
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "./_components/header";
+import { Header } from "../components/header";
 import { cn } from "@/lib/utils";
+import { QueryProvider } from "@/components/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,15 +19,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          inter.className,
-          "flex flex-col min-h-screen container mx-auto"
-        )}
-      >
-        <Header />
-        {children}
-      </body>
+      <QueryProvider>
+        <body
+          className={cn(
+            inter.className,
+            "flex flex-col min-h-screen dark container mx-auto"
+          )}
+        >
+          <Header />
+          {children}
+        </body>
+      </QueryProvider>
     </html>
   );
 }

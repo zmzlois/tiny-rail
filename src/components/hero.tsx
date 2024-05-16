@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Header } from "./header";
 
-export const HeroSection = () => {
+export const HeroSection = async () => {
   return (
     <section className="bg-hero_gradient">
       <div className="z-10 relative flex flex-col items-start justify-center min-h-[80vh]">

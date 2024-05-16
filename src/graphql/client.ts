@@ -25,21 +25,19 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
 const domain = process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3000';
 
-const httpLink = new HttpLink({ uri: "https://backboard.railway.app/graphql/v2" });
+const httpLink = new HttpLink({ uri: "http://localhost:4000/graphql" });
 
 
 export const client = new ApolloClient({
-    uri: process.env.RAILWAY_API,
+    // uri: process.env.RAILWAY_API,
+    uri: "http://localhost:4000/graphql",
     link: from([errorLink, httpLink]),
-    credentials: "Authorization: Bearer " + process.env.RAILWAY_TEAM_TOKEN,
+    credentials: "include",
     cache: new InMemoryCache(),
     connectToDevTools: true,
     headers: {
-        authorization: `Bearer ${process.env.RAILWAY_TEAM_TOKEN}`,
+        // authorization: `Bearer ${process.env.RAILWAY_TEAM_TOKEN}`,
         'Access-Control-Allow-Credentials': 'true',
-        //'Access-Control-Allow-Origin': domain,
-        origin: domain,
-
     },
 
 });

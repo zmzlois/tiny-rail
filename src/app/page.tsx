@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { HeroSection } from "./_components/hero";
+import { HeroSection } from "../components/hero";
 
 export default function Home() {
   return (
