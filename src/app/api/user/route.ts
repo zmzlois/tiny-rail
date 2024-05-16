@@ -11,9 +11,6 @@ export async function GET(req: any) {
     // Run the cors middleware
     await cors(req);
 
-    let data: any;
-
-    const url = new URL(process.env.RAILWAY_API!);
 
     const headers = {
         "Authorization": `Bearer ${token}`,
