@@ -1,7 +1,6 @@
-import { graphql } from "gql.tada";
-import { useQuery } from "urql";
+import { gql, useQuery } from '@apollo/client';
 
-export const userQuery = graphql(`
+export const userQuery = gql`
 query User {
     me {
         avatar
@@ -38,4 +37,4 @@ query User {
         }
     }
 }
-`)
+`

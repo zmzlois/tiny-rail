@@ -1,14 +1,10 @@
 "use client";
 
-import { Provider } from "urql";
-import { userClient, teamClient } from "@/graphql/client";
+import { ApolloProvider as Provider } from "@apollo/client";
+import { client } from "@/graphql/client";
 
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <Provider value={userClient}>
-      <Provider value={teamClient}>{children}</Provider>
-    </Provider>
-  );
+  return <Provider client={client}>{children}</Provider>;
 }
