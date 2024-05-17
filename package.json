@@ -7,15 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen"
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "pull": "drizzle-kit introspect"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
     "@auth/drizzle-adapter": "^1.1.0",
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/typed-document-node": "^5.0.6",
-    "@graphql-codegen/typescript": "^4.0.6",
-    "@graphql-codegen/typescript-operations": "^4.2.0",
     "@radix-ui/react-context-menu": "^2.1.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -30,8 +28,6 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",
     "gql.tada": "^1.7.5",
-    "graphql": "^16.8.1",
-    "graphql-request": "^7.0.1",
     "micro-cors": "^0.1.1",
     "next": "14.2.3",
     "next-auth": "^5.0.0-beta.18",
@@ -44,7 +40,6 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@0no-co/graphqlsp": "^1.12.3",
     "@tanstack/eslint-plugin-query": "^5.35.6",
     "@types/node": "^20",
     "@types/react": "^18",

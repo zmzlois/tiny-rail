@@ -6,6 +6,7 @@ enum ActiveFeatureFlag {
   OBSERVABILITY_V2
   SERVICE_GROUPS
   STACKER_WORKFLOWS
+  TEMPLATE_CONFIG_PANE
   TEMPLATE_SERVICE_EJECT
 }
 
@@ -404,6 +405,15 @@ type DomainWithStatus {
   certificates: [CertificatePublicData!]
   dnsRecords: [DNSRecords!]!
   domain: Domain
+}
+
+type EgressGateway {
+  ipv4: String!
+}
+
+input EgressGatewayCreateInput {
+  environmentId: String!
+  serviceId: String!
 }
 
 type Environment implements Node {
@@ -848,6 +858,9 @@ type Mutation {
 
   """Updates a deployment trigger."""
   deploymentTriggerUpdate(id: String!, input: DeploymentTriggerUpdateInput!): DeploymentTrigger!
+
+  """Create a new egress gateway association for a service instance"""
+  egressGatewayAssociationCreate(input: EgressGatewayCreateInput!): [EgressGateway!]!
 
   """
   Change the User's account email if there is a valid change email request.
@@ -1745,6 +1758,9 @@ type Query {
 
   """All domains for a service instance"""
   domains(environmentId: String!, projectId: String!, serviceId: String!): AllDomains!
+
+  """All egress gateways assigned to a service instance"""
+  egressGateways(environmentId: String!, serviceId: String!): [EgressGateway!]!
 
   """Find a single environment"""
   environment(id: String!): Environment!
@@ -2724,7 +2740,6 @@ input TemplateDeleteInput {
 
 input TemplateDeployInput {
   environmentId: String
-  plugins: [String!] @deprecated(reason: "The databases from the template will be used.")
   projectId: String
   services: [TemplateDeployService!]!
   teamId: String

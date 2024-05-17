@@ -7,6 +7,7 @@ import { QueryProvider } from "@/components/query-provider";
 import SessionProvider from "@/components/auth/session-provider";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { fetchMe } from "@/server/me";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
