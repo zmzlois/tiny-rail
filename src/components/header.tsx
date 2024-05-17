@@ -45,15 +45,17 @@ export const Header = ({ user }: { user?: User | undefined }) => {
       {path.startsWith("/project") ? (
         <ProjectBreadcrumb />
       ) : (
-        <Link href="/">
-          <RailwayLogo className={"w-10 h-10 my-4"} />
+        <Link href="/" className="flex items-center gap-2">
+          <RailwayLogo className={"w-10 h-10 my-4 hidden sm:block"} />
+          <h3 className="font-semibold">Tiny Rail</h3>
+          <sub>v1</sub>
         </Link>
       )}
       {path.startsWith("/project") && <ArchitectObservability />}
 
       {/* TODO */}
       <div className="flex space-x-6">
-        {(path.length < 2 || path === "/login") &&
+        {(path.length < 2 || path === "/login" || !user) &&
           NavConfig.map((item) => (
             <a
               key={item.name}

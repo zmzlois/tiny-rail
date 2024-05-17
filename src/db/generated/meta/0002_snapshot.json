@@ -1,6 +1,6 @@
 {
-  "id": "3147e8e0-81b2-4f25-9de5-c54eb96d7ac2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "15e0d568-1b30-4072-a4d9-8302f3aaa169",
+  "prevId": "5d5c443a-da88-4245-bb65-5c7b28ccfc45",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -344,6 +344,12 @@
       "name": "user",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -367,12 +373,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
         },
         "createdAt": {
           "name": "createdAt",

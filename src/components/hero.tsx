@@ -12,8 +12,15 @@ export const HeroSection = async () => {
             Effortless Scale
           </h1>
           <h2>
-            Railway is the cloud for building, shipping, and monitoring
-            applications. No Platform Engineer required.
+            Tiny Rail is a light version railway. See more at{" "}
+            <a
+              href="https://railway.app"
+              target="_blank"
+              rel="noreferrer"
+              className="text-purple-500 underline underline-offset-4 decoration-1"
+            >
+              <b>Railway</b>
+            </a>
           </h2>
           <Link
             href="/new"

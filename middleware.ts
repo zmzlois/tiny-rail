@@ -7,3 +7,7 @@ export default auth((req) => {
         return Response.redirect(url)
     }
 })
+
+export const config = {
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+}

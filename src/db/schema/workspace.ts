@@ -8,10 +8,18 @@ import {
 } from "drizzle-orm/pg-core"
 
 
+
 export const workspaces = pgTable("workspace", {
     name: text("name"),
     description: text("description"),
     image: text("image"),
-    ownerId: text("ownerId").notNull(),
+    creatorId: text("ownerId").notNull(),
+    ...base
+})
+
+export const workspaceMembers = pgTable("workspace_members", {
+    workspaceId: text("workspaceId").notNull(),
+    userId: text("userId").notNull(),
+    role: text("role").notNull(),
     ...base
 })

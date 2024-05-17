@@ -15,8 +15,8 @@ export const client1 = async () => createClient({
 
 export const client2 = async () => createClient({
     batch: {
-        batchInterval: 100, // ms
-        maxBatchSize: 10,
+        batchInterval: 1000, // ms
+        maxBatchSize: 2,
     },
     url: 'https://backboard.railway.app/graphql/v2',
     headers: {
