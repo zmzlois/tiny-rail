@@ -47,8 +47,14 @@ export const Header = ({ user }: { user?: User | undefined }) => {
       ) : (
         <Link href="/" className="flex items-center gap-2">
           <RailwayLogo className={"w-10 h-10 my-4 hidden sm:block"} />
-          <h3 className="font-semibold">Tiny Rail</h3>
-          <sub>v1</sub>
+          {!path.startsWith("/new") ? (
+            <>
+              <h3 className="font-semibold">Tiny Rail</h3>
+              <sub>v1</sub>
+            </>
+          ) : (
+            <h3 className="font-semibold">New Project</h3>
+          )}
         </Link>
       )}
       {path.startsWith("/project") && <ArchitectObservability />}
@@ -60,7 +66,7 @@ export const Header = ({ user }: { user?: User | undefined }) => {
             <a
               key={item.name}
               href={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-muted"
+              className="text-sm font-medium text-muted-foreground hover:text-primary"
             >
               {item.name}
               {item.number && (
@@ -112,7 +118,7 @@ const DashboardButton = ({ user }: { user?: User | undefined }) => {
       ) : (
         <Dialog>
           <DialogTrigger>
-            <p className="text-sm font-medium text-muted-foreground hover:text-muted">
+            <p className="text-sm font-medium text-muted-foreground hover:text-primary">
               Login
             </p>
           </DialogTrigger>
