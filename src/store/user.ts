@@ -30,6 +30,6 @@ export const useStore = create(persist<Action & State>((set) => ({
     updateProjectName: (projectName) => set({ projectName }),
     updateIsOnHobbyPlan: (isOnHobbyPlan) => set({ isOnHobbyPlan }),
 }), {
-    name: 'tiny-rail',
+    name: '_tiny-rail',
     storage: createJSONStorage(() => localStorage),
 },))

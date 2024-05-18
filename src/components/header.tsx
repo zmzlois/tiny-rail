@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -82,16 +82,20 @@ const MobileNav = () => {
 
 const DashboardButton = ({ user }: { user?: User | undefined }) => {
   // FIXME: once on dashboard this button needs to switch to user button
-
+  const store = useStore((state) => {
+    return {
+      id: state.updateId,
+      name: state.updateName,
+      avatar: state.updateAvatar,
+    };
+  });
   const path = usePathname();
 
-  console.log("user", user);
-
-  const store = useStore((state) => {
-    state.updateId(user?.id!);
-    state.updateAvatar(user?.image!);
-    state.updateName(user?.name!);
-  });
+  useEffect(() => {
+    store.id(user?.id ?? "");
+    store.name(user?.username ?? "");
+    store.avatar(user?.image ?? "");
+  }, []);
 
   return (
     <>

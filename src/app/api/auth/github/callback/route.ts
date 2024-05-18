@@ -39,6 +39,11 @@ export async function GET(request: Request): Promise<Response> {
         const existingUser = await db.select().from(users).where(eq(users.github_id, githubUser.id)).then((rows) => rows[0]);
 
         if (existingUser) {
+
+            const updateToken = await db.update(accounts).set({
+                access_token: tokens.accessToken
+            }).where(eq(accounts.providerAccountId, githubUser.id))
+
             const session = await lucia.createSession(existingUser.id, {});
             const sessionCookie = lucia.createSessionCookie(session.id);
             cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
