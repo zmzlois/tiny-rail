@@ -7,19 +7,19 @@ export const HeroSection = async () => {
       <div className="z-10 relative flex flex-col items-start justify-center min-h-[80vh]">
         <div className="sm:w-[60vw] w-full flex flex-col lg:gap-8 gap-4">
           <h1>
-            Instant Deployments,
+            Just deploy it.
             <br />
-            Effortless Scale
+            No tracing. No logs. No fuzz.
           </h1>
           <h2>
-            Tiny Rail is a light version railway. See more at{" "}
+            Tiny Rail is a light mock of railway. <br /> See the{" "}
             <a
               href="https://railway.app"
               target="_blank"
               rel="noreferrer"
               className="text-purple-500 underline underline-offset-4 decoration-1"
             >
-              <b>Railway</b>
+              <b>actual thing</b>
             </a>
           </h2>
           <Link

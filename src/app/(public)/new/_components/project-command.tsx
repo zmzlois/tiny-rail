@@ -14,8 +14,10 @@ import {
 import React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useContext } from "react";
+import useAppendSearchParam from "@/lib/useAppendSearchParam";
+import appendSearchParam from "@/lib/useAppendSearchParam";
 
 type CommandItems = {
   icon?: React.ReactNode;
@@ -30,12 +32,16 @@ export type ProjectCommandProps = {
 };
 
 export const ProjectCommand = ({ props }: { props: ProjectCommandProps }) => {
-  const [open, setOpen] = React.useState(true);
-
+  const action = useSearchParams().get("action");
   const router = useRouter();
+  const [items, setItems] = React.useState(props.items);
+
+  function handleSelect(item: CommandItems) {
+    item.action && appendSearchParam({ key: "action", value: item.action });
+  }
   return (
     <div>
-      <CommandDialog open={true} onOpenChange={setOpen}>
+      <CommandDialog open={true}>
         {" "}
         <DialogPrimitive.Close
           onClick={() => router.back()}
@@ -57,11 +63,11 @@ export const ProjectCommand = ({ props }: { props: ProjectCommandProps }) => {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>
-            {props.items.map((item) => (
+            {items.map((item) => (
               <CommandItem
                 key={item.title}
-                className="cursor-pointer "
-                onClick={() => item.action}
+                className="cursor-pointer"
+                onSelect={() => handleSelect(item)}
               >
                 <div className="hover:text-primary flex gap-4 items-center">
                   {item.icon && item.icon}

@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { RailwayLogo } from "@/icons/railway-logo";
 import { RailwayLogoType } from "@/icons/railway-logo-type";
+import dynamic from "next/dynamic";
+
 import Link from "next/link";
 import type { User } from "next-auth";
 import {
@@ -39,17 +41,16 @@ export const Header = ({ user }: { user?: User | undefined }) => {
   return (
     <div
       className={cn(
-        "flex justify-between container mx-auto  items-center p-4 "
+        "flex justify-between container mx-auto  items-center py-10 p-4 "
       )}
     >
       {path.startsWith("/project") ? (
         <ProjectBreadcrumb />
       ) : (
         <Link href="/" className="flex items-center gap-2">
-          <RailwayLogo className={"w-10 h-10 my-4 hidden sm:block"} />
           {!path.startsWith("/new") ? (
             <>
-              <h3 className="font-semibold">Tiny Rail</h3>
+              <h3 className="font-semibold text-xl">Tiny Rail</h3>
               <sub>v1</sub>
             </>
           ) : (
@@ -61,21 +62,6 @@ export const Header = ({ user }: { user?: User | undefined }) => {
 
       {/* TODO */}
       <div className="flex space-x-6">
-        {(path.length < 2 || path === "/login" || !user) &&
-          NavConfig.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-primary"
-            >
-              {item.name}
-              {item.number && (
-                <span className="bg-accent_2 text-accent_1 rounded-full py-[2px] px-[4px] text-xs mb-1 -mr-2 ml-1">
-                  {item.number}
-                </span>
-              )}
-            </a>
-          ))}
         <DashboardButton user={user} />
       </div>
     </div>

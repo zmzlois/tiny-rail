@@ -3,6 +3,8 @@
 import { signOut, signIn } from "@/auth"
 import { redirect } from "next/navigation"
 
+
+
 export async function signOutFunction() {
     return signOut()
 }

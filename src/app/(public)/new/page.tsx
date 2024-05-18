@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import {
   ProjectCommand,
   ProjectCommandProps,
@@ -42,8 +42,8 @@ const newProject: ProjectCommandProps = {
 
 export default function Page() {
   return (
-    <>
+    <div>
       <ProjectCommand props={newProject} />
-    </>
+    </div>
   );
 }

@@ -14,8 +14,8 @@ export const ProjectBreadcrumb = () => {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">
-            <RailwayLogo className="w-10 h-10 my-4" />
+          <BreadcrumbLink href="/dashboard" className="font-semibold">
+            Tiny Rail
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
