@@ -4,10 +4,6 @@ import {
   ProjectCommand,
   ProjectCommandProps,
 } from "./_components/project-command";
-import {
-  ProjectContext,
-  ProjectDispatchContext,
-} from "./_components/project-context";
 
 const newProject: ProjectCommandProps = {
   title: "New Project",
@@ -15,44 +11,39 @@ const newProject: ProjectCommandProps = {
   items: [
     {
       title: "Deploy from Github repo",
+      action: "github",
     },
     {
       title: "Deploy from templates",
+      action: "templates",
     },
     {
       title: "Deploy Postgres",
+      action: "postgres",
     },
     {
       title: "Deploy Redis",
+      action: "redis",
     },
     {
       title: "Deploy MySQL",
+      action: "mysql",
     },
     {
       title: "Deploy MongoDB",
+      action: "mongodb",
     },
     {
       title: "Empty project",
+      action: "empty",
     },
   ],
 };
 
-export function reducer(state: any, action: any) {
-  switch (action.type) {
-    case "github":
-      return { render: action.payload };
-    default:
-      return state;
-  }
-}
 export default function Page() {
-  const [state, dispatch] = React.useReducer(reducer, newProject);
-
   return (
-    <ProjectContext.Provider value={state}>
-      <ProjectDispatchContext.Provider value={dispatch}>
-        <ProjectCommand props={state} />
-      </ProjectDispatchContext.Provider>
-    </ProjectContext.Provider>
+    <>
+      <ProjectCommand props={newProject} />
+    </>
   );
 }

@@ -16,12 +16,11 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { ProjectContext } from "./project-context";
 
 type CommandItems = {
   icon?: React.ReactNode;
   title: string;
-  action?: () => void;
+  action?: string;
 };
 
 export type ProjectCommandProps = {
@@ -32,8 +31,6 @@ export type ProjectCommandProps = {
 
 export const ProjectCommand = ({ props }: { props: ProjectCommandProps }) => {
   const [open, setOpen] = React.useState(true);
-
-  const projectContext = useContext(ProjectContext);
 
   const router = useRouter();
   return (

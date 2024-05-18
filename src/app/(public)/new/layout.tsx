@@ -1,5 +1,4 @@
 import React from "react";
-import { ProjectContext } from "./_components/project-context";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
