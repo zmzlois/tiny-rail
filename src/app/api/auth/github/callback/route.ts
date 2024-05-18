@@ -1,0 +1,123 @@
+import { github, lucia } from "@/lib/lucia";
+import { cookies } from "next/headers";
+import { OAuth2RequestError } from "arctic";
+import { generateIdFromEntropySize } from "lucia";
+
+import { accounts, db, users } from "@/db";
+import { eq } from "drizzle-orm";
+import { workspaceMembers, workspaces } from "@/db/schema/workspace";
+
+export async function GET(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
+    const storedState = cookies().get("github_oauth_state")?.value ?? null;
+    if (!code || !state || !storedState || state !== storedState) {
+        return new Response(null, {
+            status: 400
+        });
+    }
+
+    console.log("code", code, "state", state, "storedState", storedState)
+
+    try {
+        const tokens = await github.validateAuthorizationCode(code);
+
+
+        const githubUserResponse = await fetch("https://api.github.com/user", {
+            headers: {
+                Authorization: `Bearer ${tokens.accessToken}`
+            }
+        });
+
+
+        const githubUser: GitHubUser = await githubUserResponse.json();
+
+        console.log("githubUser", githubUser)
+
+        // Replace this with your own DB client.
+        const existingUser = await db.select().from(users).where(eq(users.github_id, githubUser.id)).then((rows) => rows[0]);
+
+        if (existingUser) {
+            const session = await lucia.createSession(existingUser.id, {});
+            const sessionCookie = lucia.createSessionCookie(session.id);
+            cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+            return new Response(null, {
+                status: 302,
+                headers: {
+                    Location: "/"
+                }
+            });
+        }
+
+        const userId = generateIdFromEntropySize(10); // 16 characters long
+
+        // Replace this with your own DB client.
+        await db.transaction(async (trx) => {
+            const insertUser = await trx.insert(users).values({
+                id: userId,
+                github_id: githubUser.id,
+                username: githubUser.login,
+                name: githubUser.name ?? "",
+                image: githubUser.avatar_url ?? "",
+                email: githubUser.email ?? ""
+            });
+
+            const insertAccount = await trx.insert(accounts).values({
+                userId: userId,
+                provider: "github",
+                type: "oauth",
+                providerAccountId: githubUser.id,
+                access_token: tokens.accessToken,
+            })
+
+            const workspaceId = generateIdFromEntropySize(10);
+
+            const insertWorkspace = await trx.insert(workspaces).values({
+                id: workspaceId,
+                name: githubUser.login,
+                creatorId: userId
+            })
+
+            const insertWorkspaceMember = await trx.insert(workspaceMembers).values({
+                workspaceId: workspaceId,
+                userId: userId,
+                role: "owner"
+            })
+
+            Promise.all([insertUser, insertAccount, insertWorkspace, insertWorkspaceMember])
+
+        })
+        const session = await lucia.createSession(userId, {});
+        const sessionCookie = lucia.createSessionCookie(session.id);
+        cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+        return new Response(null, {
+            status: 302,
+            headers: {
+                Location: "/dashboard"
+            }
+        });
+    } catch (e) {
+        // the specific error message depends on the provider
+        console.log("[/api/auth/github/callback Error]", e)
+        if (e instanceof OAuth2RequestError) {
+            // invalid code
+            return new Response(null, {
+                status: 400,
+                statusText: "Invalid Code"
+            });
+        }
+        return new Response(null, {
+            status: 500,
+            statusText: "OAuth2 Error"
+        });
+    }
+}
+
+interface GitHubUser {
+    id: string;
+    login: string;
+    name: string;
+    email?: string;
+    avatar_url?: string;
+}

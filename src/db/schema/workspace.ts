@@ -5,6 +5,8 @@ import {
     text,
     primaryKey,
     integer,
+    pgEnum
+
 } from "drizzle-orm/pg-core"
 
 
@@ -17,9 +19,10 @@ export const workspaces = pgTable("workspace", {
     ...base
 })
 
+const roleEnum = pgEnum("role", ["owner", "admin", "member"])
 export const workspaceMembers = pgTable("workspace_members", {
     workspaceId: text("workspaceId").notNull(),
     userId: text("userId").notNull(),
-    role: text("role").notNull(),
+    role: roleEnum("role").notNull(),
     ...base
 })

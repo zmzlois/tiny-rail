@@ -4,9 +4,9 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/components/query-provider";
-import SessionProvider from "@/components/auth/session-provider";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+
+import getUser from "@/server/auth";
+import { permanentRedirect, redirect } from "next/navigation";
 import { fetchMe } from "@/server/me";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,10 +20,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
-  const user = session?.user;
-  console.log("session", session);
+  const { user } = (await getUser()) as unknown as { user: any };
 
   return (
     <html lang="en">

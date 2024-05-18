@@ -1,12 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useRef } from "react";
-import { RailwayLogo } from "@/icons/railway-logo";
-import { RailwayLogoType } from "@/icons/railway-logo-type";
-import dynamic from "next/dynamic";
 
 import Link from "next/link";
-import type { User } from "next-auth";
+import type { User } from "lucia";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +16,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
-import { auth } from "@/auth";
+import React from "react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -88,6 +84,15 @@ const DashboardButton = ({ user }: { user?: User | undefined }) => {
   // FIXME: once on dashboard this button needs to switch to user button
 
   const path = usePathname();
+
+  console.log("user", user);
+
+  const store = useStore((state) => {
+    state.updateId(user?.id!);
+    state.updateAvatar(user?.image!);
+    state.updateName(user?.name!);
+  });
+
   return (
     <>
       {user ? (

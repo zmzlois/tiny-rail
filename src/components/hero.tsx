@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Header } from "./header";
 
 export const HeroSection = async () => {
   return (

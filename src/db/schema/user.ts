@@ -10,14 +10,17 @@ import {
 import type { AdapterAccountType } from "next-auth/adapters"
 import { base } from "./base"
 import { create } from "domain"
+import { email } from "envsafe"
 
 
 
 
 export const users = pgTable("user", {
-    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    id: text("id").primaryKey(),
+    github_id: text("github_id").unique(),
+    username: text("userName"),
     name: text("name"),
-    email: text("email").notNull(),
+    email: text("email"),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
@@ -52,11 +55,14 @@ export const accounts = pgTable(
 
 
 export const sessions = pgTable("session", {
-    sessionToken: text("sessionToken").primaryKey(),
-    userId: text("userId")
+    id: text("id").primaryKey(),
+    userId: text("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+        .references(() => users.id),
+    expiresAt: timestamp("expires_at", {
+        withTimezone: true,
+        mode: "date"
+    }).notNull()
 })
 
 export const verificationTokens = pgTable(
