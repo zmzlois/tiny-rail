@@ -9,8 +9,11 @@ import { workspaceMembers, workspaces } from "@/db/schema/workspace";
 
 export async function GET(request: Request): Promise<Response> {
     const url = new URL(request.url);
+    console.log("[/api/auth/github/callback] url", url)
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
+    const origin = url.searchParams.get("origin");
+    console.log("[/api/auth/github/callback] origin", origin)
     const storedState = cookies().get("github_oauth_state")?.value ?? null;
     if (!code || !state || !storedState || state !== storedState) {
         return new Response(null, {
@@ -18,7 +21,7 @@ export async function GET(request: Request): Promise<Response> {
         });
     }
 
-    console.log("code", code, "state", state, "storedState", storedState)
+
 
     try {
         const tokens = await github.validateAuthorizationCode(code);
@@ -33,7 +36,6 @@ export async function GET(request: Request): Promise<Response> {
 
         const githubUser: GitHubUser = await githubUserResponse.json();
 
-        console.log("githubUser", githubUser)
 
         // Replace this with your own DB client.
         const existingUser = await db.select().from(users).where(eq(users.github_id, githubUser.id)).then((rows) => rows[0]);
@@ -47,10 +49,21 @@ export async function GET(request: Request): Promise<Response> {
             const session = await lucia.createSession(existingUser.id, {});
             const sessionCookie = lucia.createSessionCookie(session.id);
             cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+
+            console.log("request url [callback]", request.url)
+
+            if (origin) {
+                return new Response(null, {
+                    status: 302,
+                    headers: {
+                        Location: origin ?? "/dashboard"
+                    }
+                });
+            }
             return new Response(null, {
                 status: 302,
                 headers: {
-                    Location: "/"
+                    Location: "/dashboard"
                 }
             });
         }
@@ -65,7 +78,7 @@ export async function GET(request: Request): Promise<Response> {
                 username: githubUser.login,
                 name: githubUser.name ?? "",
                 image: githubUser.avatar_url ?? "",
-                email: githubUser.email ?? ""
+                // email: githubUser.email ?? ""
             });
 
             const insertAccount = await trx.insert(accounts).values({
@@ -123,6 +136,6 @@ interface GitHubUser {
     id: string;
     login: string;
     name: string;
-    email?: string;
+    //  email?: string;
     avatar_url?: string;
 }

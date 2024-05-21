@@ -36,7 +36,6 @@
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",
-    "envsafe": "^2.0.3",
     "gql.tada": "^1.7.5",
     "jsonwebtoken": "^9.0.2",
     "lucia": "^3.2.0",

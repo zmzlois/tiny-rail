@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-
+import { useRef } from "react";
 import Link from "next/link";
 import type { User } from "lucia";
 import {
@@ -18,18 +18,12 @@ import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { SignIn } from "./auth/sign-in";
+
 import { UserButton } from "./user-button";
 import { ProjectBreadcrumb } from "./header/project-breadcrumbs";
 import { ArchitectObservability } from "./header/architect-observability";
+import { SignInDialog } from "./sign-in-dialog";
+import { env } from "@/server/constants";
 
 export const Header = ({ user }: { user?: User | undefined }) => {
   const path = usePathname();
@@ -58,7 +52,7 @@ export const Header = ({ user }: { user?: User | undefined }) => {
 
       {/* TODO */}
       <div className="flex space-x-6">
-        <DashboardButton user={user} />
+        <DashboardButton user={user} path={path} />
       </div>
     </div>
   );
@@ -80,7 +74,13 @@ const MobileNav = () => {
   );
 };
 
-const DashboardButton = ({ user }: { user?: User | undefined }) => {
+const DashboardButton = ({
+  user,
+  path,
+}: {
+  user?: User | undefined;
+  path: string;
+}) => {
   // FIXME: once on dashboard this button needs to switch to user button
   const store = useStore((state) => {
     return {
@@ -89,7 +89,8 @@ const DashboardButton = ({ user }: { user?: User | undefined }) => {
       avatar: state.updateAvatar,
     };
   });
-  const path = usePathname();
+
+  console.log("path", path);
 
   useEffect(() => {
     store.id(user?.id ?? "");
@@ -111,21 +112,7 @@ const DashboardButton = ({ user }: { user?: User | undefined }) => {
           </Link>
         )
       ) : (
-        <Dialog>
-          <DialogTrigger>
-            <p className="text-sm font-medium text-muted-foreground hover:text-primary">
-              Login
-            </p>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader className="flex flex-col items-center gap-10">
-              <DialogTitle className="text-4xl">Login</DialogTitle>
-              <DialogDescription>
-                <SignIn />
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        <SignInDialog triggerText="Sign In" path={path} />
       )}
     </>
   );
