@@ -6,13 +6,14 @@ import { generateIdFromEntropySize } from "lucia";
 import { accounts, db, users } from "@/db";
 import { eq } from "drizzle-orm";
 import { workspaceMembers, workspaces } from "@/db/schema/workspace";
+import { deserializeState } from "@/lib/generate-state";
 
 export async function GET(request: Request): Promise<Response> {
     const url = new URL(request.url);
     console.log("[/api/auth/github/callback] url", url)
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
-    const origin = url.searchParams.get("origin");
+    const origin = deserializeState(state!).origin;
     console.log("[/api/auth/github/callback] origin", origin)
     const storedState = cookies().get("github_oauth_state")?.value ?? null;
     if (!code || !state || !storedState || state !== storedState) {

@@ -22,7 +22,7 @@ export default function Page() {
 
   const action = useSearchParams().get("action");
   const path = usePathname() + `?action=${action}`;
-  console.log("[new/page.tsx] path", path);
+
   const username = useStore((state) => state.name);
 
   function handleSelect(item: CommandItems) {
@@ -34,7 +34,7 @@ export default function Page() {
   useEffect(() => {
     if (action === "github") {
       if (!username || username === "") setAuthed(false);
-      console.log("path", path);
+
       setProjects("loading");
 
       handleGithub(setProjects, username);

@@ -9,8 +9,6 @@ import {
 
 import type { AdapterAccountType } from "next-auth/adapters"
 import { base } from "./base"
-import { create } from "domain"
-import { email } from "envsafe"
 
 
 

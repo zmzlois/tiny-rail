@@ -9,14 +9,10 @@ export function SignIn({
   origin,
 }: {
   className?: string;
-  origin: string;
+  origin?: string;
 }) {
-  const path = origin
-    .replace("/", "%2F")
-    .replace("?", "%3F")
-    .replace("=", "%3D");
   return (
-    <Link href={`/api/auth/github?origin=${path}`} className={className}>
+    <Link href={`/api/auth/github?origin=${origin}`} className={className}>
       {" "}
       <Button className="flex gap-4">
         <span>Sign In</span> <GitHubLogoIcon />{" "}

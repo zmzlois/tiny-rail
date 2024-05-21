@@ -1,22 +1,20 @@
 import { generateState } from "arctic";
 import { github } from "@/lib/lucia";
 import { cookies } from "next/headers";
+import { serializeState } from "@/lib/generate-state";
 
 export async function GET(request: Request): Promise<Response> {
-    const state = generateState();
+
+
 
     const requestUrl = new URL(request.url);
 
-    console.log("[github auth route] requestUrl", requestUrl);
+    const origin = requestUrl.searchParams.get("origin")
+    const state = serializeState(origin);
 
-    const origin = requestUrl.searchParams.get("origin");
+    // if we don't have a origin, use the original state
+    const url = await github.createAuthorizationURL(state)
 
-    console.log("[github auth route] origin", origin);
-
-
-    const url = await github.createAuthorizationURL(state) + "&origin=" + origin;
-
-    console.log("[github auth route] url", url);
 
     cookies().set("github_oauth_state", state, {
         path: "/",
@@ -26,5 +24,7 @@ export async function GET(request: Request): Promise<Response> {
         sameSite: "lax"
     });
 
+
     return Response.redirect(url);
 }
+
