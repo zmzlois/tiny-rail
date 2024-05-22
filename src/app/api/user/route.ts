@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import cors from "../cors";
 import { RequestHandler } from "next/dist/server/next";
-import { userQuery } from "@/graphql/user.query";
 
 const token = process.env.RAILWAY_TEAM_TOKEN
 

@@ -1,23 +1,26 @@
 import Link from "next/link";
-export const ProjectCard = ({ project }: { project: Project }) => {
-  const staticUrl = project.node.services.edges.map((item) => {
-    item.node.deployments.edges.map((item) =>
-      item.node.staticUrl !== undefined ? item.node.staticUrl : ""
-    );
-  }) as unknown as string[];
+import z from "zod";
+import { selectProjectSchema, selectServiceSchema } from "@/db/schema/project";
+export const ProjectCard = ({
+  project,
+  service,
+}: {
+  project: z.infer<typeof selectProjectSchema>;
+  service?: z.infer<typeof selectServiceSchema>[];
+}) => {
+  const serviceCount = service && service.length;
 
-  const serviceCount = project.node.services.edges.length;
   return (
     <Link
-      href={`/project/${project.node.id}`}
+      href={`/project/${project.id}`}
       className="rounded-lg bg-zinc-800/60 hover:bg-zinc-800/80 group border p-4 py-8 flex flex-col gap-16 lg:w-[calc(30%-1rem)] sm:w-[30%] w-[90%]  "
     >
       <h3 className="text-lg text-foreground/80 group:hover:text-foreground">
-        {project.node.name}
+        {project.name}
       </h3>
       <div className="flex flex-col gap-2">
         <p className="text-xs">
-          Last update: {project.node.updatedAt.split("T")[0]}
+          Last update: {project.updatedAt.split("T")[0]}
         </p>
 
         <p className="text-xs">

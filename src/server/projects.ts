@@ -29,7 +29,7 @@ export default async function getTemplatesFromRailway() {
 
 }
 
-export async function getProjectByWorkspace() {
+export async function getProjectByDefaultWorkspace() {
     const workspace = await getDefaultWorkspaceByUserId()
 
     return db.select().from(projects).where(eq(projects.workspaceId, workspace.id))

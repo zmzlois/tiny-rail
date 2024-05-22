@@ -32,11 +32,9 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
-    "cookie": "^0.6.0",
-    "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",
-    "gql.tada": "^1.7.5",
+    "drizzle-zod": "^0.5.1",
     "jsonwebtoken": "^9.0.2",
     "lucia": "^3.2.0",
     "micro-cors": "^0.1.1",
@@ -51,8 +49,7 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "urlcat": "^3.1.0",
-    "urql": "^4.1.0",
+    "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
