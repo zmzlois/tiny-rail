@@ -16,13 +16,16 @@ import React, { Suspense } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useContext } from "react";
-import useAppendSearchParam from "@/lib/useAppendSearchParam";
-import appendSearchParam from "@/lib/useAppendSearchParam";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
 
 export type CommandItems = {
+  /* if it is a template item there will be a code */
+  code?: string;
   icon?: React.ReactNode;
   title: string;
+  description?: string;
+  repo?: string;
+  creator?: string;
   action?: string;
 };
 
@@ -37,18 +40,28 @@ export type ProjectCommandProps =
 export const ProjectCommand = ({
   props,
   onSelect,
+  path,
 }: {
   props: ProjectCommandProps;
   onSelect: (args: CommandItems) => void;
+  path: string;
 }) => {
   const router = useRouter();
+  console.log("path", path);
 
   return (
     <div>
       <CommandDialog open={true}>
         {" "}
-        <DialogPrimitive.Close
+        <button
           onClick={() => router.back()}
+          className="flex items-center gap-2 opacity-75 absolute left-4 top-4"
+        >
+          <ChevronLeftIcon className="h-4 w-4" />
+          <span className="text-primary text-sm">Back</span>
+        </button>
+        <DialogPrimitive.Close
+          onClick={() => router.push("/dashboard")}
           className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 z-30 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
         >
           <Cross2Icon className="h-4 w-4" />
@@ -70,9 +83,10 @@ export const ProjectCommand = ({
                   className="cursor-pointer"
                   onSelect={() => onSelect(item)}
                 >
-                  <div className="hover:text-primary flex gap-4 items-center">
-                    {item.icon && item.icon}
-                    <p>{item.title}</p>
+                  <div className="hover:text-primary flex flex-col gap-2 items-start">
+                    <p className="text-primary">{item.title}</p>
+                    {item.creator && <sub>{item.creator}</sub>}
+                    {item.description && <p>{item.description}</p>}
                   </div>
                 </CommandItem>
               ))
@@ -88,8 +102,8 @@ const LoadingComponent = () => {
   return (
     <div className="flex items-center justify-center w-full">
       <div className="space-y-2">
-        <Skeleton className="h-4 w-[250px]" />
-        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[300px]" />
+        <Skeleton className="h-4 w-[200px]" />
       </div>
     </div>
   );
@@ -99,9 +113,9 @@ const MultiLayerLoading = () => {
   const number = 6;
   return (
     <div className="flex items-center justify-center w-full">
-      <div className="space-y-2">
+      <div className="space-y-4">
         {[...Array(number)].map((_, index) => (
-          <Skeleton key={index} className="h-4 w-[250px]" />
+          <Skeleton key={index} className="h-4  w-[400px]" />
         ))}
       </div>
     </div>

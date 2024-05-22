@@ -10,11 +10,11 @@ import { deserializeState } from "@/lib/generate-state";
 
 export async function GET(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    console.log("[/api/auth/github/callback] url", url)
+
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
     const origin = deserializeState(state!).origin;
-    console.log("[/api/auth/github/callback] origin", origin)
+
     const storedState = cookies().get("github_oauth_state")?.value ?? null;
     if (!code || !state || !storedState || state !== storedState) {
         return new Response(null, {
@@ -51,20 +51,19 @@ export async function GET(request: Request): Promise<Response> {
             const sessionCookie = lucia.createSessionCookie(session.id);
             cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
-            console.log("request url [callback]", request.url)
 
-            if (origin) {
+            if (!origin) {
                 return new Response(null, {
                     status: 302,
                     headers: {
-                        Location: origin ?? "/dashboard"
+                        Location: "/dashboard"
                     }
                 });
             }
             return new Response(null, {
                 status: 302,
                 headers: {
-                    Location: "/dashboard"
+                    Location: origin ?? "/dashboard"
                 }
             });
         }
@@ -134,7 +133,7 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 interface GitHubUser {
-    id: string;
+    id: number;
     login: string;
     name: string;
     //  email?: string;

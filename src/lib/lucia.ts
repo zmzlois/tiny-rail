@@ -1,6 +1,6 @@
 import { Lucia } from "lucia";
 import { GitHub } from "arctic";
-import { env } from "../server/constants";
+import { env } from "./constants";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { cookies } from "next/headers";
 import { cache } from "react";

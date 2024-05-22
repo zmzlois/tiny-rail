@@ -3,39 +3,40 @@ import { base } from "./base";
 import {
     timestamp,
     pgTable,
-    text,
+    varchar,
     primaryKey,
     integer,
 } from "drizzle-orm/pg-core"
+import { roleEnum } from "./workspace";
 
 export const projects = pgTable("projects", {
-    name: text("name"),
-    description: text("description"),
-    image: text("image"),
-    workspaceId: text("workspaceId").notNull(),
+    name: varchar("name"),
+    description: varchar("description"),
+    image: varchar("image"),
+    workspaceId: varchar("workspaceId").notNull(),
     ...base
 })
 
 export const services = pgTable("project_services", {
-    name: text("name"),
-    description: text("description"),
-    image: text("image"),
-    projectId: text("projectId").notNull(),
+    name: varchar("name"),
+    description: varchar("description"),
+    image: varchar("image"),
+    projectId: varchar("projectId").notNull(),
     ...base
 })
 
 
 export const projectTeams = pgTable("project_teams", {
-    name: text("name"),
-    description: text("description"),
-    image: text("image"),
-    projectId: text("projectId").notNull(),
+    name: varchar("name"),
+    description: varchar("description"),
+    image: varchar("image"),
+    projectId: varchar("projectId").notNull(),
     ...base
 })
 
 export const teamMembers = pgTable("team_members", {
-    teamId: text("teamId").notNull(),
-    userId: text("userId").notNull(),
-    role: text("role").notNull(),
+    teamId: varchar("teamId").notNull(),
+    userId: varchar("userId").notNull(),
+    role: roleEnum("role").notNull(),
     ...base
 })

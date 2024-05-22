@@ -25,7 +25,7 @@ export async function GET(req: any) {
         const res = await fetch("https://backboard.railway.app/graphql/v2", {
             method: 'POST',
             headers: header,
-            body: JSON.stringify({ query: userQuery, variables: {} }),
+            // body: JSON.stringify({ query: userQuery, variables: {} }),
             next: { revalidate: 10 },
         })
         const data = await res.json()

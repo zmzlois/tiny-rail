@@ -5,6 +5,7 @@ import {
     primaryKey,
     integer,
     boolean,
+    varchar,
 } from "drizzle-orm/pg-core"
 
 import type { AdapterAccountType } from "next-auth/adapters"
@@ -14,13 +15,13 @@ import { base } from "./base"
 
 
 export const users = pgTable("user", {
-    id: text("id").primaryKey(),
-    github_id: text("github_id").unique(),
-    username: text("userName"),
-    name: text("name"),
-    email: text("email"),
+    id: varchar("id").primaryKey(),
+    github_id: integer("github_id").unique(),
+    username: varchar("userName"),
+    name: varchar("name"),
+    email: varchar("email"),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
-    image: text("image"),
+    image: varchar("image"),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
     deleted: boolean("deleted").default(false).notNull(),
@@ -30,19 +31,19 @@ export const users = pgTable("user", {
 export const accounts = pgTable(
     "account",
     {
-        userId: text("userId")
+        userId: varchar("userId")
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
-        type: text("type").$type<AdapterAccountType>().notNull(),
-        provider: text("provider").notNull(),
-        providerAccountId: text("providerAccountId").notNull(),
+        type: varchar("type").$type<AdapterAccountType>().notNull(),
+        provider: varchar("provider").notNull(),
+        providerAccountId: integer("providerAccountId").notNull(),
         refresh_token: text("refresh_token"),
         access_token: text("access_token"),
         expires_at: integer("expires_at"),
-        token_type: text("token_type"),
-        scope: text("scope"),
-        id_token: text("id_token"),
-        session_state: text("session_state"),
+        token_type: varchar("token_type"),
+        scope: varchar("scope"),
+        id_token: varchar("id_token"),
+        session_state: varchar("session_state"),
     },
     (account) => ({
         compoundKey: primaryKey({
@@ -53,7 +54,7 @@ export const accounts = pgTable(
 
 
 export const sessions = pgTable("session", {
-    id: text("id").primaryKey(),
+    id: varchar("id").primaryKey(),
     userId: text("user_id")
         .notNull()
         .references(() => users.id),
@@ -66,8 +67,8 @@ export const sessions = pgTable("session", {
 export const verificationTokens = pgTable(
     "verificationToken",
     {
-        identifier: text("identifier").notNull(),
-        token: text("token").notNull(),
+        identifier: varchar("identifier").notNull(),
+        token: varchar("token").notNull(),
         expires: timestamp("expires", { mode: "date" }).notNull(),
     },
     (vt) => ({

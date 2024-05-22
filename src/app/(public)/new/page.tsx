@@ -5,14 +5,14 @@ import {
   ProjectCommandProps,
   CommandItems,
 } from "./_components/project-command";
-import { getUserRepos } from "@/server/github";
+
 import { useEffect, useMemo, useRef } from "react";
 import { useStore } from "@/store/user";
 import { useSearchParams } from "next/navigation";
 import appendSearchParam from "@/lib/useAppendSearchParam";
 import { SignInDialog } from "@/components/sign-in-dialog";
 import { usePathname } from "next/navigation";
-import { validateRequest } from "@/lib/lucia";
+import { handleGithub, handleTemplates } from "./new-project";
 
 export default function Page() {
   const [projects, setProjects] =
@@ -32,17 +32,20 @@ export default function Page() {
   }
 
   useEffect(() => {
+    if (action === "" || !action) setProjects(newProject);
     if (action === "github") {
       if (!username || username === "") setAuthed(false);
-
       setProjects("loading");
-
       handleGithub(setProjects, username);
     }
-  }, [path]);
+    if (action === "templates") {
+      setProjects("loading");
+      handleTemplates(setProjects, username);
+    }
+  }, [path, action]);
   return (
     <div>
-      <ProjectCommand props={projects} onSelect={handleSelect} />
+      <ProjectCommand props={projects} onSelect={handleSelect} path={path} />
       {!authed && (
         <SignInDialog
           triggerText="Sign in to Github"
@@ -52,29 +55,6 @@ export default function Page() {
       )}
     </div>
   );
-}
-
-function handleGithub(
-  setProjects: Dispatch<ProjectCommandProps>,
-  username: string
-) {
-  const commandItem = {
-    title: "Select a Github repo",
-    placeholder: "Search for a Github repo...",
-    items: [] as CommandItems[],
-  };
-
-  getUserRepos(username).then((data) => {
-    data.map((repo: any) => {
-      const title = repo.clone_url.split(".com/")[1].replace(".git", "");
-
-      commandItem.items.push({
-        title: title,
-        action: repo.clone_url,
-      });
-    });
-    setProjects(commandItem);
-  });
 }
 
 const newProject: ProjectCommandProps = {

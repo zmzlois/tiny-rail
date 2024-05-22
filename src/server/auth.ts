@@ -9,6 +9,21 @@ import { cookies } from "next/headers";
 export default async function getUser() {
     const { user, session } = await validateRequest();
 
+    if (!user) {
+        return new Response(null, {
+            status: 302,
+            headers: {
+                Location: "/"
+            }
+        });
+    }
+    if (!session) return new Response(null, {
+        status: 302,
+        headers: {
+            Location: "/"
+        }
+    });;
+
     return { user, session };
 }
 

@@ -23,7 +23,7 @@ import { UserButton } from "./user-button";
 import { ProjectBreadcrumb } from "./header/project-breadcrumbs";
 import { ArchitectObservability } from "./header/architect-observability";
 import { SignInDialog } from "./sign-in-dialog";
-import { env } from "@/server/constants";
+import { env } from "@/lib/constants";
 
 export const Header = ({ user }: { user?: User | undefined }) => {
   const path = usePathname();
@@ -84,16 +84,12 @@ const DashboardButton = ({
   // FIXME: once on dashboard this button needs to switch to user button
   const store = useStore((state) => {
     return {
-      id: state.updateId,
       name: state.updateName,
       avatar: state.updateAvatar,
     };
   });
 
-  console.log("path", path);
-
   useEffect(() => {
-    store.id(user?.id ?? "");
     store.name(user?.username ?? "");
     store.avatar(user?.image ?? "");
   }, []);

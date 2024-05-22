@@ -2,9 +2,10 @@ import { base } from "./base";
 import {
     timestamp,
     pgTable,
-    text,
+    varchar,
     primaryKey,
     integer,
+
     pgEnum
 
 } from "drizzle-orm/pg-core"
@@ -12,17 +13,17 @@ import {
 
 
 export const workspaces = pgTable("workspace", {
-    name: text("name"),
-    description: text("description"),
-    image: text("image"),
-    creatorId: text("ownerId").notNull(),
+    name: varchar("name"),
+    description: varchar("description"),
+    image: varchar("image"),
+    creatorId: varchar("ownerId").notNull(),
     ...base
 })
 
-const roleEnum = pgEnum("role", ["owner", "admin", "member"])
+export const roleEnum = pgEnum("role", ["owner", "admin", "member"])
 export const workspaceMembers = pgTable("workspace_members", {
-    workspaceId: text("workspaceId").notNull(),
-    userId: text("userId").notNull(),
+    workspaceId: varchar("workspaceId").notNull(),
+    userId: varchar("userId").notNull(),
     role: roleEnum("role").notNull(),
-    ...base
+    ...base // Add the missing property '_' with the value 'base'
 })

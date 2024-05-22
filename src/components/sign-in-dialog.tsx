@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { SignIn } from "./auth/sign-in";
-import { env } from "@/server/constants";
+import { env } from "@/lib/constants";
 
 export const SignInDialog = ({
   triggerText,
@@ -18,7 +18,6 @@ export const SignInDialog = ({
   open?: boolean;
   path: string;
 }) => {
-  console.log("[sign-in-dialog] path", path);
   return (
     <>
       {open === undefined ? (
