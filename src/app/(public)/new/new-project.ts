@@ -41,8 +41,9 @@ export function handleTemplates(
     try {
         const templates = getTemplatesFromRailway().then((data) => {
 
-            data.templates.edges.map((template) => {
+            data.map((template) => {
                 console.log("template", template.node)
+
                 commandItem.items.push({
                     code: template.node.code,
                     title: template.node.metadata.name,

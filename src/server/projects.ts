@@ -23,7 +23,7 @@ export default async function getTemplatesFromRailway() {
                 }
             },
         }
-    })
+    }).then((data) => data.templates.edges.sort((a, b) => a.node.activeProjects > b.node.activeProjects ? -1 : 1))
 
     return result;
 
