@@ -9,6 +9,7 @@ import { db, projects } from "@/db"
 import { eq } from "drizzle-orm"
 import { services } from "@/db/schema/project"
 import { CustomError } from "@/lib/error"
+const teamId = env.RAILWAY_TEAM_ID
 
 
 
@@ -90,13 +91,13 @@ export async function getLatestDeploymentInEnvironment(input: { environmentId: s
 type Project = {
     id: string;
     name: string;
-    serviceCount: number;
-    deployUrl: string | null;
 };
 
-export async function getProjectById(input: { projectId: string | null }, client: Client) {
+export async function getProjectById(input: { projectId: string | null }) {
 
     const { projectId } = input;
+
+    const client = await client1();
 
     if (!projectId) throw new CustomError("projectId not found")
 
@@ -135,97 +136,45 @@ export async function getProjectById(input: { projectId: string | null }, client
 }
 export async function getProjectsFromRailway(client: Client) {
 
-    return client.query({
+    const result = client.query({
         projects: {
             __args: {
-                teamId: process.env.RAILWAY_TEAM_ID
+                teamId: teamId
             },
-            __typename: true,
             __scalar: true,
             edges: {
                 node: {
                     __scalar: true,
-                    services: {
-                        __typename: true,
-                        edges: {
-                            id: true,
-                            __scalar: true,
-                        }
-                    },
-                    deployments: {
-                        __typename: true,
-                        edges: {
-                            node: {
-                                environmentId: true,
-                                staticUrl: true,
-                                __scalar: true
-                            }
-                        }
-                    }
 
                 }
             }
         }
-    }).then((res) => res.projects.edges)
+    })
+
+    return result.then((res) => res.projects.edges.map((data) => data.node))
 
 }
 
-export async function getProjectByDefaultWorkspace(): Promise<Project[]> {
+export async function getProjectByDefaultWorkspace() {
     const workspace = await getDefaultWorkspaceByUserId()
     const gql = await client1()
     // if the workspace is Lois's team account test how it looks like
-    if (workspace.name === "zmzlois") {
+    // TODO: comment back in or sth
+    // if (workspace.name === "zmzlois") {
 
-        const projects = await getProjectsFromRailway(gql)
-
-        Promise.all(projects.map(async (project) => {
-            const env = await getLastEnvironmentInProject({ projectId: project.node.id }, gql)
-            const envId = env?.node.id;
-
-            const projectId = project.node.id;
-
-            if (!envId) throw new CustomError("project environment not found");
-            const deploy = await getLatestDeploymentInEnvironment({ environmentId: envId, projectId }, gql)
-            return {
-                id: project.node.id,
-                name: project.node.name,
-                serviceCount: project.node.services.edges.length,
-                deployUrl: deploy?.node.staticUrl,
-            }
-        }))
-    }
-
-
-
-    // get the external project id to fetch from Railway
-    const project = await db.select().from(projects).where(eq(projects.id, workspace.id))
-
-    if (!project || project.length < 1) throw new CustomError("no project found");
-
-
-
-    const result = project.map(async (item) => {
-        const externalId = item.externalId;
-
-        if (!externalId) throw new CustomError("no external id found in project " + item.name)
-        const projectFromRailway = await getProjectById({ projectId: externalId }, gql)
-
-
+    return (await getProjectsFromRailway(gql)).map((item) => {
         return {
-            id: item.id,
-            name: item.name,
-            serviceCount: projectFromRailway.service.edges.length,
-            deployUrl: projectFromRailway.deployUrl,
+            externalId: item.id,
+            updateAt: item.updatedAt,
+            ...item,
         }
     })
 
+    // }
 
-    return await Promise.all(result);
+    // get the external project id to fetch from Railway
+    return db.select().from(projects).where(eq(projects.id, workspace.id))
 }
-
-
-
-
 
 
 export async function createProjectById(input: { id: string }) {

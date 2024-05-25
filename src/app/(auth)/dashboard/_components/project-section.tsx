@@ -1,12 +1,20 @@
+"use client";
 import { getProjectByDefaultWorkspace } from "@/server/projects";
 import { ProjectCard } from "./project-card";
 import { useQuery } from "@tanstack/react-query";
+import { useStore } from "@/store/user";
+import { useEffect, useMemo } from "react";
 
 export const ProjectSection = () => {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["user", "projects"],
+    queryKey: ["projects"],
     queryFn: async () => {
-      return getProjectByDefaultWorkspace();
+      return (await getProjectByDefaultWorkspace()).map((res) => {
+        return {
+          externalId: res.externalId!,
+          name: res.name,
+        };
+      });
     },
   });
 

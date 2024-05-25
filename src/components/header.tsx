@@ -35,7 +35,7 @@ export const Header = ({ user }: { user?: User | undefined }) => {
       )}
     >
       {path.startsWith("/project") ? (
-        <ProjectBreadcrumb />
+        <ProjectBreadcrumb path={path} />
       ) : (
         <Link href="/" className="flex items-center gap-2">
           {!path.startsWith("/new") ? (

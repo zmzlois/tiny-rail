@@ -1,3 +1,6 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useMemo } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,10 +9,106 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  getProjectByDefaultWorkspace,
+  getProjectById,
+} from "@/server/projects";
+import { useQuery } from "@tanstack/react-query";
 import { RailwayLogo } from "@/icons/railway-logo";
-import { SlashIcon } from "@radix-ui/react-icons";
+import { ChevronDownIcon, SlashIcon } from "@radix-ui/react-icons";
+import { Skeleton } from "../ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CustomError } from "@/lib/error";
+import { useStore } from "@/store/user";
 
-export const ProjectBreadcrumb = () => {
+export const ProjectBreadcrumb = ({ path }: { path: string }) => {
+  const projectId = path.split("/").pop();
+
+  const update = useStore((state) => {
+    return {
+      projectName: state.projectName,
+      updateProjectName: state.updateProjectName,
+    };
+  });
+
+  const {
+    data: projects,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const result = await getProjectByDefaultWorkspace();
+      const name = result.find((res) => res.id === projectId);
+
+      return {
+        currentProject: name,
+        result: result.filter((res) => res.id !== projectId),
+      };
+    },
+  });
+
+  useEffect(() => {
+    projects?.currentProject &&
+      update.updateProjectName(projects!.currentProject!.name!);
+  }, [projects]);
+
+  if (isLoading)
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard" className="font-semibold">
+              Tiny Rail
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              href="/projects"
+              className="cursor-none"
+              aria-disabled
+            >
+              <Skeleton className="w-[200px]" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+
+  if (error)
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard" className="font-semibold">
+              Tiny Rail
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              href="/projects"
+              className="cursor-none"
+              aria-disabled
+            >
+              Error loading project
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -21,13 +120,31 @@ export const ProjectBreadcrumb = () => {
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
-        <BreadcrumbPage>Project Name</BreadcrumbPage>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex gap-2 items-center">
+            <p className="text-base text-primary/80 tracking-wide">
+              {update.projectName ? update.projectName : "Not found"}
+            </p>{" "}
+            <ChevronDownIcon />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full ">
+            {projects!.result?.map((item, index) => (
+              <div key={item.name}>
+                <DropdownMenuItem className="py-2 w-full px-3">
+                  <Link
+                    href={`/project/${item.externalId}`}
+                    className="text-base text-primary/80 tracking-wide"
+                  >
+                    {item.name}
+                  </Link>
+                </DropdownMenuItem>
+                {index !== projects!.result.length - 1 && (
+                  <DropdownMenuSeparator />
+                )}
+              </div>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </BreadcrumbList>
     </Breadcrumb>
   );

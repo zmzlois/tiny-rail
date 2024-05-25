@@ -3,10 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { cn } from "@/lib/utils";
-import { QueryProvider } from "@/components/query-provider";
+import QueryProvider from "@/components/query-provider";
 
 import getUser from "@/server/auth";
 import { permanentRedirect, redirect } from "next/navigation";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,14 +25,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <QueryProvider>
-        <body
-          className={cn(inter.className, "flex flex-col min-h-screen dark")}
-        >
+      <body className={cn(inter.className, "flex flex-col min-h-screen dark")}>
+        {" "}
+        <QueryProvider>
           <Header user={user} />
           {children}
-        </body>
-      </QueryProvider>
+          <ReactQueryDevtools initialIsOpen />
+        </QueryProvider>
+      </body>
     </html>
   );
 }
