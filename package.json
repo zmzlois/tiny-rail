@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "drizzle-kit generate",
+    "gen": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "push": "drizzle-kit push",
     "pull": "drizzle-kit introspect",
@@ -49,6 +49,7 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "unique-names-generator": "^4.7.1",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },

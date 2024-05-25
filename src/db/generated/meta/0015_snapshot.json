@@ -1,6 +1,6 @@
 {
-  "id": "15e0d568-1b30-4072-a4d9-8302f3aaa169",
-  "prevId": "5d5c443a-da88-4245-bb65-5c7b28ccfc45",
+  "id": "84896d8c-6eee-4132-9bc4-a9e30aec6e07",
+  "prevId": "c91478fd-73a0-4d6b-a9d4-159abe12cf27",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -10,31 +10,31 @@
       "columns": {
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "projectId": {
-          "name": "projectId",
-          "type": "text",
+        "project_id": {
+          "name": "project_id",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -61,7 +61,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_teams_project_id_projects_id_fk": {
+          "name": "project_teams_project_id_projects_id_fk",
+          "tableFrom": "project_teams",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -69,33 +83,39 @@
       "name": "projects",
       "schema": "",
       "columns": {
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "workspaceId": {
           "name": "workspaceId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -122,7 +142,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "projects_workspaceId_workspace_id_fk": {
+          "name": "projects_workspaceId_workspace_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "workspace",
+          "columnsFrom": [
+            "workspaceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -130,33 +164,39 @@
       "name": "project_services",
       "schema": "",
       "columns": {
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "projectId": {
-          "name": "projectId",
-          "type": "text",
+        "project_id": {
+          "name": "project_id",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -183,35 +223,50 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_services_project_id_projects_id_fk": {
+          "name": "project_services_project_id_projects_id_fk",
+          "tableFrom": "project_services",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.team_members": {
-      "name": "team_members",
+    "public.project_team_members": {
+      "name": "project_team_members",
       "schema": "",
       "columns": {
         "teamId": {
           "name": "teamId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "role": {
           "name": "role",
-          "type": "text",
+          "type": "role",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -238,7 +293,34 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_team_members_teamId_project_teams_id_fk": {
+          "name": "project_team_members_teamId_project_teams_id_fk",
+          "tableFrom": "project_team_members",
+          "tableTo": "project_teams",
+          "columnsFrom": [
+            "teamId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_team_members_userId_user_id_fk": {
+          "name": "project_team_members_userId_user_id_fk",
+          "tableFrom": "project_team_members",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -248,25 +330,25 @@
       "columns": {
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "provider": {
           "name": "provider",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "providerAccountId": {
           "name": "providerAccountId",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -290,25 +372,25 @@
         },
         "token_type": {
           "name": "token_type",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "scope": {
           "name": "scope",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "id_token": {
           "name": "id_token",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "session_state": {
           "name": "session_state",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }
@@ -325,7 +407,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -340,27 +422,81 @@
       },
       "uniqueConstraints": {}
     },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.user": {
       "name": "user",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
+        "github_id": {
+          "name": "github_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userName": {
+          "name": "userName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "email": {
           "name": "email",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "emailVerified": {
           "name": "emailVerified",
@@ -370,7 +506,7 @@
         },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -399,6 +535,50 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_github_id_unique": {
+          "name": "user_github_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "github_id"
+          ]
+        }
+      }
+    },
+    "public.verificationToken": {
+      "name": "verificationToken",
+      "schema": "",
+      "columns": {
+        "identifier": {
+          "name": "identifier",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "verificationToken_identifier_token_pk": {
+          "name": "verificationToken_identifier_token_pk",
+          "columns": [
+            "identifier",
+            "token"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "public.workspace_members": {
@@ -407,25 +587,26 @@
       "columns": {
         "workspaceId": {
           "name": "workspaceId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "role": {
           "name": "role",
-          "type": "text",
+          "type": "role",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -452,7 +633,34 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "workspace_members_workspaceId_workspace_id_fk": {
+          "name": "workspace_members_workspaceId_workspace_id_fk",
+          "tableFrom": "workspace_members",
+          "tableTo": "workspace",
+          "columnsFrom": [
+            "workspaceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "workspace_members_userId_user_id_fk": {
+          "name": "workspace_members_userId_user_id_fk",
+          "tableFrom": "workspace_members",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -462,31 +670,31 @@
       "columns": {
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "ownerId": {
           "name": "ownerId",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -518,7 +726,17 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "owner",
+        "admin",
+        "member"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},

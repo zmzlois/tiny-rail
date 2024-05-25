@@ -37,6 +37,7 @@ export async function getUserRepos(username: string) {
         const result = data.map((repo) => {
             return {
                 full_name: repo.full_name,
+                branch: repo.default_branch,
                 clone_url: repo.clone_url,
             }
         })

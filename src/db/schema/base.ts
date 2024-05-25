@@ -8,5 +8,9 @@ export const base = {
     createdAt: timestamp("createdAt", { mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp("updatedAt", { mode: 'string' }).defaultNow().notNull(),
     deleted: boolean("deleted").default(false).notNull(),
+}
 
+export const externalBase = {
+    externalId: varchar("external_id").notNull(),
+    ...base,
 }

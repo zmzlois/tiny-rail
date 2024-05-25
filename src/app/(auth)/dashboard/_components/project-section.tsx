@@ -11,7 +11,10 @@ export const ProjectSection = () => {
   });
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: Some error occured 😢 </p>;
+  if (error) {
+    console.log("error", error);
+    return <p>Error: Some error occured 😢 </p>;
+  }
 
   if (!data) return <p>You don&apos;t have any projects yet!!</p>;
 

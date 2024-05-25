@@ -1,6 +1,6 @@
 {
-  "id": "f7a8b24e-d32d-4a49-8685-6c5244a7fe91",
-  "prevId": "29d9e03e-ab39-4410-8294-afe5f689aca7",
+  "id": "1215ddcb-e98c-4923-a96d-cc1efea8019f",
+  "prevId": "84896d8c-6eee-4132-9bc4-a9e30aec6e07",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -26,8 +26,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "projectId": {
-          "name": "projectId",
+        "project_id": {
+          "name": "project_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -61,7 +61,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_teams_project_id_projects_id_fk": {
+          "name": "project_teams_project_id_projects_id_fk",
+          "tableFrom": "project_teams",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -69,6 +83,12 @@
       "name": "projects",
       "schema": "",
       "columns": {
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
           "type": "varchar",
@@ -122,7 +142,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "projects_workspaceId_workspace_id_fk": {
+          "name": "projects_workspaceId_workspace_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "workspace",
+          "columnsFrom": [
+            "workspaceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -130,6 +164,12 @@
       "name": "project_services",
       "schema": "",
       "columns": {
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
           "type": "varchar",
@@ -148,8 +188,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "projectId": {
-          "name": "projectId",
+        "project_id": {
+          "name": "project_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -183,12 +223,26 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_services_project_id_projects_id_fk": {
+          "name": "project_services_project_id_projects_id_fk",
+          "tableFrom": "project_services",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.team_members": {
-      "name": "team_members",
+    "public.project_team_members": {
+      "name": "project_team_members",
       "schema": "",
       "columns": {
         "teamId": {
@@ -239,7 +293,34 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "project_team_members_teamId_project_teams_id_fk": {
+          "name": "project_team_members_teamId_project_teams_id_fk",
+          "tableFrom": "project_team_members",
+          "tableTo": "project_teams",
+          "columnsFrom": [
+            "teamId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_team_members_userId_user_id_fk": {
+          "name": "project_team_members_userId_user_id_fk",
+          "tableFrom": "project_team_members",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -326,7 +407,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -552,7 +633,34 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "workspace_members_workspaceId_workspace_id_fk": {
+          "name": "workspace_members_workspaceId_workspace_id_fk",
+          "tableFrom": "workspace_members",
+          "tableTo": "workspace",
+          "columnsFrom": [
+            "workspaceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_members_userId_user_id_fk": {
+          "name": "workspace_members_userId_user_id_fk",
+          "tableFrom": "workspace_members",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
