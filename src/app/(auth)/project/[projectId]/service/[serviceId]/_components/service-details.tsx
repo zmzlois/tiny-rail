@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { redeployService } from "@/server/service";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import { RandomSkeleton } from "@/components/ui/random-skeleton";
 export const ServiceDetails = ({
   params,
 }: {
@@ -28,8 +29,8 @@ export const ServiceDetails = ({
             return {
               id: item.id,
               name: item.name,
-              // environmentId:
-              //  url:
+              environmentId: item.environmentId,
+              url: item.url,
               updatedAt: item.updatedAt,
             };
           }),
@@ -40,7 +41,7 @@ export const ServiceDetails = ({
 
   const service = data?.services.find((service) => service.id === serviceId);
 
-  // const serviceUrl = service?.url ? service.url[0] : null;
+  const serviceUrl = service?.url ?? null;
 
   function handleRedeploy() {
     toast.info("Redeploying service");
@@ -60,7 +61,12 @@ export const ServiceDetails = ({
   if (isLoading)
     return (
       <ServiceMajorCard itemName="Loading">
-        <Skeleton className="w-40" />
+        <div className="w-full py-10 h-full items-start flex flex-col justify-start">
+          {" "}
+          {...Array.from({ length: 3 }).map((_, index) => (
+            <RandomSkeleton key={index} index={index} />
+          ))}
+        </div>
       </ServiceMajorCard>
     );
   if (error)
@@ -78,16 +84,16 @@ export const ServiceDetails = ({
     >
       <div className="fle flex-col space-y-4">
         <h1 className="text-3xl py-4 font-semibold">
-          {service!.name && service!.name}
+          {service?.name ? service?.name : ""}
         </h1>
         <Separator />
         <div className="grid grid-cols-4 w-full gap-2 items-center ">
           <div className="col-span-3">
-            {/* {serviceUrl ? (
+            {serviceUrl ? (
               <DeploymentCard url={serviceUrl} updatedAt={service!.updatedAt} />
             ) : (
               ""
-            )} */}
+            )}
           </div>
           <Button
             variant={"outline"}
@@ -102,7 +108,7 @@ export const ServiceDetails = ({
       <DestroyCard
         serviceId={serviceId}
         projectId={projectId}
-        // environmentId={service!.environmentId[0]}
+        environmentId={service!.environmentId[0]}
       />
     </ServiceMajorCard>
   );

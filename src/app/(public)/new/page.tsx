@@ -16,18 +16,23 @@ import {
   handleGithub,
   handleTemplates,
   newProject,
+  handleRepoDeploy,
 } from "./new-project";
+import { toast } from "sonner";
 
 export default function Page() {
   const [projects, setProjects] =
     React.useState<ProjectCommandProps>(newProject);
 
-  const [authed, setAuthed] = React.useState(true);
-
   const action = useSearchParams().get("action");
+
+  const projectId = useSearchParams().get("project");
+
+  const isService = projectId !== null;
   const path = usePathname() + `?action=${action}`;
 
   const username = useStore((state) => state.name);
+  const authed = username !== "";
 
   function handleSelect(item: CommandItems) {
     if (!item.action || item.action === "")
@@ -36,9 +41,12 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (!username) setAuthed(false);
-
-    setAuthed(true);
+    console.table({
+      path,
+      authed,
+      action,
+      projectId,
+    });
 
     const item =
       projects !== "loading"
@@ -48,10 +56,12 @@ export default function Page() {
 
     if (action === "" || !action) setProjects(newProject);
     if (action === "github") {
-      handleGithub(setProjects, username);
+      toast.info("Fetching Github repos...");
+      handleGithub(setProjects, username, projectId);
     }
     if (action === "templates") {
-      handleTemplates(setProjects);
+      toast.info("Fetching templates...");
+      handleTemplates(setProjects, projectId);
     }
 
     if (
@@ -60,13 +70,23 @@ export default function Page() {
       action === "mysql" ||
       action === "mongodb"
     ) {
-      setProjects("creating");
-      item && handleDatabase(item, setProjects);
+      item && handleDatabase(item, setProjects, projectId);
     }
-  }, [path, username, action, projects]);
+
+    if (action?.includes("/")) {
+      console.log("[new/page]: Deploying repo");
+      item && handleRepoDeploy(item, projectId);
+    }
+  }, [path, authed, action, projectId]);
+
   return (
     <div>
-      <ProjectCommand props={projects} onSelect={handleSelect} path={path} />
+      <ProjectCommand
+        props={projects}
+        isService={isService}
+        onSelect={handleSelect}
+        path={path}
+      />
       {authed === false && (
         <SignInDialog
           triggerText="Sign in to Github"

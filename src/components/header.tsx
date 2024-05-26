@@ -18,7 +18,7 @@ import { UserProps } from "@/lib/user";
 import { useStore } from "@/store/user";
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-
+import { useSearchParams } from "next/navigation";
 import { UserButton } from "./user-button";
 import { ProjectBreadcrumb } from "./header/project-breadcrumbs";
 import { ArchitectObservability } from "./header/architect-observability";
@@ -27,6 +27,8 @@ import { env } from "@/lib/constants";
 
 export const Header = ({ user }: { user?: User | undefined }) => {
   const path = usePathname();
+
+  const isService = useSearchParams().get("service");
 
   return (
     <div
@@ -45,7 +47,9 @@ export const Header = ({ user }: { user?: User | undefined }) => {
                 <sub>v1</sub>
               </>
             ) : (
-              <h3 className="font-semibold">New Project</h3>
+              <h3 className="font-semibold">
+                {isService === "true" ? "New Service" : "New Project"}
+              </h3>
             )}
           </Link>
         )}

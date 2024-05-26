@@ -2,12 +2,15 @@
 
 import { client1 } from "./client"
 import { CustomError } from "@/lib/error"
-import { createNewProject } from "./projects"
+import { createNewProject, findProjectInDb, getProjectByIdFromRailway } from "./projects"
 import { db, projects } from "@/db"
 import { generate } from "@/lib/generate-name"
 import { getDefaultWorkspaceByUserId } from "./workspace"
-import { services } from "@/db/schema/project"
+import { environments, services } from "@/db/schema/project"
 import { create } from "domain"
+import { z } from "zod"
+import { eq } from "drizzle-orm"
+import { selectProjectSchema } from "@/db/schema/project"
 
 
 
@@ -28,8 +31,13 @@ export async function createServiceInDb(input: { externalId: string, projectId: 
     if (!input.externalId) throw new CustomError("input.externalId not found")
     if (!input.projectId) throw new CustomError("input.projectId not found")
     if (!input.name) throw new CustomError("input.name not found")
+
+    const environment = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0])
+
+
     return db.insert(services).values({
         externalId: input.externalId,
+        environmentId: environment.id,
         projectId: input.projectId,
         name: input.name,
     }).returning().then((res) => res[0])
@@ -47,32 +55,29 @@ export async function createServiceInDb(input: { externalId: string, projectId: 
 //   __typename: 'Environment'
 // }
 
-export async function createService(input: { source: Source }) {
+export async function createService(input: { source: Source, projectId: string | null }) {
 
     const gql = await client1();
 
-    // const environments = await gql.query({
-    //     project: {
-    //         __args: {
-    //             id: process.env.RAILWAY_PROJECT_ID!
-    //         },
-    //         environments: {
-    //             edges: {
-    //                 node: {
-    //                     id: true,
-    //                     __scalar: true
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }).then((res) => res.project.environments.edges.map((edge) => console.log("edge", edge.node)))
+    console.log("[createService]:", input)
+
 
     let variables = {}
-    const newProject = await createNewProject()
+    let newProject: z.infer<typeof selectProjectSchema> | undefined;
 
-    if (!input.source.source) throw new CustomError("input.source.source not found")
+    if (!input.projectId) {
+        newProject = await createNewProject();
+        input.projectId = newProject.id;
+    }
 
-    if (!newProject.externalId) throw new CustomError("newProject.id not found")
+
+    let externalId = await findProjectInDb({ projectId: input.projectId ?? newProject!.id }).then((res) => res.externalId);
+
+    if (!externalId) externalId = process.env.RAILWAY_PROJECT_ID!;
+
+    if (!input.source.source) throw new CustomError("input.source.source not found");
+
+
 
     if (input.source.type === "image") {
 
@@ -94,7 +99,7 @@ export async function createService(input: { source: Source }) {
                         input: {
                             branch: "main",
                             environmentId: process.env.RAILWAY_ENVIRONMENT_ID,
-                            projectId: newProject.externalId,
+                            projectId: externalId,
                             name: input.source.name,
                             source: {
                                 image: input.source.source,
@@ -110,7 +115,7 @@ export async function createService(input: { source: Source }) {
 
             return createServiceInDb({
                 externalId: newService.serviceCreate.id,
-                projectId: newProject.id,
+                projectId: input.projectId,
                 name: input.source.name
             })
         }
@@ -118,11 +123,12 @@ export async function createService(input: { source: Source }) {
 
     } else if (input.source.type === "repo") {
 
+        console.log("input.source.source", input.source.source)
         const newService = await gql.mutation({
             serviceCreate: {
                 __args: {
                     input: {
-                        projectId: newProject.externalId,
+                        projectId: externalId,
                         branch: input.source.branch,
                         name: input.source.name,
                         source: {
@@ -135,29 +141,45 @@ export async function createService(input: { source: Source }) {
             }
 
         })
+
+        const findEnvironment = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0])
         return createServiceInDb({
             externalId: newService.serviceCreate.id,
-            projectId: newProject.id,
+            projectId: input.projectId,
             name: input.source.name
         })
     }
 
 }
-export async function destroyService(input: { serviceId?: string, environmentId?: string }) {
+export async function destroyService(input: { serviceId?: string, projectId: string, environmentId?: string }) {
 
     const gql = await client1();
     if (!input.serviceId) throw new CustomError("input.serviceId not found")
+    console.log("input", input)
 
-    return gql.mutation({
-        serviceDelete: {
-            __args: {
-                id: input.serviceId,
+    const serviceId = await db.select().from(services).where(eq(services.id, input.serviceId)).then((res) => res[0].externalId)
 
-                environmentId: input.environmentId
-            },
+    if (!serviceId) throw new CustomError("serviceId not found")
 
-        }
-    })
+    const environmentId = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0].externalId)
+
+    console.table({ serviceId, environmentId })
+    try {
+        return gql.mutation({
+            serviceDelete: {
+                __args: {
+                    id: serviceId,
+                    environmentId: environmentId,
+                },
+
+            }
+        })
+
+
+    } catch (error) {
+        console.error("[destroyService]:", error)
+        throw new CustomError("Failed to destroy service")
+    }
 
 }
 

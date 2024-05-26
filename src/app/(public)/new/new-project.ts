@@ -7,9 +7,10 @@ import { QueryTemplatesConnectionEdge } from "@/lib/api";
 import { createService } from "@/server/service";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { CustomError } from "@/lib/error";
 
 export const newProject: ProjectCommandProps = {
-    title: "New Project",
+
     placeholder: "Deploy a new project by typing...",
     items: [
         {
@@ -46,7 +47,8 @@ export const newProject: ProjectCommandProps = {
 
 export function handleGithub(
     setProjects: Dispatch<ProjectCommandProps>,
-    username: string
+    username: string,
+    projectId: string | null
 ) {
     const commandItem = {
         title: "Select a Github repo",
@@ -55,30 +57,30 @@ export function handleGithub(
     };
 
 
-    try {
 
-        getUserRepos(username).then((data) => {
-            data.map((repo: any) => {
-                const title = repo.clone_url.split(".com/")[1].replace(".git", "");
 
-                commandItem.items.push({
-                    title: title,
-                    action: repo.clone_url,
-                    branch: repo.branch,
-                });
+    getUserRepos(username).then((data) => {
+        data.map((repo: any) => {
+            const title = repo.clone_url.split(".com/")[1].replace(".git", "");
+
+            commandItem.items.push({
+                title: title,
+                action: title,
+                repoUrl: repo.clone_url,
+                branch: repo.branch,
             });
-            setProjects(commandItem);
         });
+        setProjects(commandItem);
+    });
 
-    } catch (e) {
-        console.error("[handleGithub]:", e)
-    }
+
 
 
 }
 
 export function handleTemplates(
     setProjects: Dispatch<ProjectCommandProps>,
+    projectId: string | null
 
 ) {
     const commandItem = {
@@ -112,7 +114,7 @@ export function handleTemplates(
 
 }
 
-export function handleDatabase(item: CommandItems, setProjects: Dispatch<ProjectCommandProps>) {
+export function handleDatabase(item: CommandItems, setProjects: Dispatch<ProjectCommandProps>, projectId: string | null) {
 
     setProjects("creating");
 
@@ -124,7 +126,7 @@ export function handleDatabase(item: CommandItems, setProjects: Dispatch<Project
 
 
     try {
-        return createService({ source: { source: item.image, type: "image", name } }).then((data) => {
+        return createService({ source: { source: item.image, type: "image", name }, projectId }).then((data) => {
 
             if (!data) {
                 toast.error("Failed to deploy " + name);
@@ -148,4 +150,31 @@ export function handleDatabase(item: CommandItems, setProjects: Dispatch<Project
     }
 
 
+}
+
+export function handleRepoDeploy(item: CommandItems, projectId: string | null) {
+
+    console.log("[handleRepoDeloy]: item", item);
+
+    if (!item.repoUrl) throw new CustomError("No repoUrl provided");
+
+
+    const sourceUrl = item.repoUrl?.includes(".git") ? item.repoUrl.replace(".git", "") : item.repoUrl;
+
+    toast.info("Trying to deploy " + item.title + "...");
+
+    createService({ source: { source: sourceUrl, branch: item.branch ?? "main", name: item.title, type: "repo" }, projectId }).then((data) => {
+        if (!data) {
+            toast.error("Failed to deploy " + item.title);
+            return;
+        }
+
+        if (!data.projectId || !data.id) {
+            toast.error("Failed to deploy " + item.title);
+            return;
+        }
+
+        toast.success("Deployed " + item.title + " successfully");
+        return redirect(`/project/${data.projectId}/service/${data.id}`);
+    });
 }

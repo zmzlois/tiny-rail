@@ -17,6 +17,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { is } from "drizzle-orm";
 
 export type CommandItems = {
   /* if it is a template item there will be a code */
@@ -25,7 +26,7 @@ export type CommandItems = {
   title: string;
   description?: string;
   image?: string;
-  repo?: string;
+  repoUrl?: string;
   creator?: string;
   action?: string;
   branch?: string;
@@ -33,7 +34,6 @@ export type CommandItems = {
 
 export type ProjectCommandProps =
   | {
-      title: string;
       placeholder?: string;
       items: CommandItems[];
     }
@@ -44,10 +44,12 @@ export const ProjectCommand = ({
   props,
   onSelect,
   path,
+  isService,
 }: {
   props: ProjectCommandProps;
   onSelect: (args: CommandItems) => void;
   path: string;
+  isService: boolean;
 }) => {
   const router = useRouter();
 
@@ -75,8 +77,10 @@ export const ProjectCommand = ({
           ) : props === "creating" ? (
             // TODO: Implement creating state.
             "Creating..."
+          ) : isService ? (
+            "New Service"
           ) : (
-            props.title
+            "New Project"
           )}
         </h3>{" "}
         <CommandInput placeholder={"Deploy a new project by typing..."} />

@@ -17,12 +17,9 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import { RandomSkeleton } from "@/components/ui/random-skeleton";
 
-const cardNumber = 5;
-const randomWidths = ["w-10", "w-20", "w-30", "w-40"];
-
-const getRandomWidthClass = (id: number) =>
-  randomWidths[id % randomWidths.length];
+const cardNumber = 3;
 
 export const ServiceCanva = ({ projectId }: { projectId: string }) => {
   console.log("projectId", projectId);
@@ -59,21 +56,13 @@ export const ServiceCanva = ({ projectId }: { projectId: string }) => {
                 <Skeleton className="h-4 w-full" />
               </CardTitle>
               <div className={cn("text-sm text-muted-foreground", className)}>
-                <Skeleton
-                  className={`${getRandomWidthClass(
-                    index + 1
-                  )} inline-block h-4 mr-2`}
-                />
-                <Skeleton
-                  className={`${getRandomWidthClass(
-                    index + 2
-                  )} inline-block h-4 mr-2`}
-                />
-                <Skeleton
-                  className={`${getRandomWidthClass(
-                    index + 3
-                  )} inline-block h-4 mr-2`}
-                />
+                {...Array.from({ length: 1 }).map((_, index) => (
+                  <RandomSkeleton
+                    key={index}
+                    index={index}
+                    className="h-3 mr-2"
+                  />
+                ))}
               </div>
             </CardHeader>
 

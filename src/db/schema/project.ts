@@ -19,12 +19,13 @@ export const projects = pgTable("projects", {
     workspaceId: varchar("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
     ...base
 })
-
+export const createProjectSchema = createInsertSchema(projects)
 export const selectProjectSchema = createSelectSchema(projects)
 
 export const services = pgTable("project_services", {
     externalId: varchar("external_id").unique(),
     name: varchar("name").notNull(),
+    environmentId: varchar("environment_id").notNull().references(() => environments.id, { onDelete: "cascade" }),
     description: varchar("description"),
     image: varchar("image"),
     url: varchar("url"),

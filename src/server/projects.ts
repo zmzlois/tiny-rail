@@ -7,7 +7,7 @@ import type { Client, DeploymentStatusInput } from "@/lib/api"
 import { getDefaultWorkspaceByUserId } from "./workspace"
 import { db, projects } from "@/db"
 import { eq } from "drizzle-orm"
-import { services } from "@/db/schema/project"
+import { environments, services } from "@/db/schema/project"
 import { CustomError } from "@/lib/error"
 
 import { create } from "domain"
@@ -186,6 +186,7 @@ export async function getProjectByIdFromRailway(input: { projectId: string, exte
                         id: true,
                         name: true,
                         __scalar: true,
+
                         deployments: {
                             edges: {
                                 node: {
@@ -205,19 +206,37 @@ export async function getProjectByIdFromRailway(input: { projectId: string, exte
 
     if (!serviceInPj) return console.log("Services in project not found")
 
-    return serviceInPj.project.services.edges.map(async (data) => {
+    const createService = serviceInPj.project.services.edges.map(async (data) => {
 
         const findService = await db.select().from(services).where(eq(services.externalId, data.node.id)).then((res) => res[0])
 
-        if (findService) return findService;
+        const findEnvironment = await db.select().from(environments).where(eq(environments.externalId, serviceInPj.project.environments.edges[0].node.id)).then((res) => res[0])
+        if (!findEnvironment) return db.insert(environments).values({
+            externalId: serviceInPj.project.environments.edges[0].node.id,
+            projectId: input.projectId,
+            name: serviceInPj.project.environments.edges[0].node.name,
+        }).returning().then((res) => res)
+
+
+        if (findService) return db.update(services).set({
+            name: data.node.name,
+            environmentId: findEnvironment.id,
+            url: data.node.deployments.edges[0] ? data.node.deployments.edges[0].node.staticUrl : ""
+        }).where(eq(services.externalId, data.node.id)).returning().then((res) => res)
+
         return db.insert(services).values({
             externalId: data.node.id,
             projectId: input.projectId,
+            environmentId: findEnvironment.id,
             name: data.node.name,
-            url: data.node.deployments.edges[0].node.staticUrl ?? null
+            url: data.node.deployments.edges[0] ? data.node.deployments.edges[0].node.staticUrl : ""
         }).returning().then((res) => res)
 
+
+
     })
+
+    return { serviceFromRailway: serviceInPj, serviceInDb: createService }
 
 
 }
@@ -253,7 +272,7 @@ export async function getProjectByDefaultWorkspace() {
     const workspace = await getDefaultWorkspaceByUserId()
 
     // added to sync services from Railway
-    // await getProjectsFromRailway(await client1())
+    await getProjectsFromRailway(await client1())
 
     // get the external project id to fetch from Railway
     const projectInWs = await db.select().from(projects).where(eq(projects.workspaceId, workspace.id))
