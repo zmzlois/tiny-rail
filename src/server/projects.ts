@@ -242,7 +242,7 @@ export async function getProjectByIdFromRailway(input: { projectId: string, exte
 }
 export async function getProjectsFromRailway(client: Client) {
 
-    const result = client.query({
+    return client.query({
         projects: {
             __args: {
                 teamId: teamId
@@ -255,16 +255,21 @@ export async function getProjectsFromRailway(client: Client) {
                 }
             }
         }
-    })
+    }).then((res) => res.projects.edges.map(async (data) => {
+        const findProject = await db.select().from(projects).where(eq(projects.externalId, data.node.id)).then((res) => res[0])
 
-    return result.then((res) => res.projects.edges.map((data) => {
-        return db.insert(projects).values({
+        if (findProject) return
+
+        if (!findProject) return db.insert(projects).values({
             name: data.node.name,
             externalId: data.node.id,
             workspaceId: 'faxle5bb7mbgzwnp'
         }).returning().then((res) => res)
-
     }))
+
+
+
+
 
 }
 

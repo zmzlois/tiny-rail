@@ -100,7 +100,7 @@ export const ServiceDetails = ({
             className="col-span-1"
             onClick={() => handleRedeploy()}
           >
-            Redploy
+            Redeploy
           </Button>
         </div>{" "}
       </div>

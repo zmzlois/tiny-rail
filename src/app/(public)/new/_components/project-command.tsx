@@ -100,7 +100,7 @@ export const ProjectCommand = ({
                   onSelect={() => onSelect(item)}
                 >
                   <div className="hover:text-primary flex flex-col gap-2 items-start">
-                    <p className="text-primary">{item.title}</p>
+                    <p className="text-primary blur-0">{item.title}</p>
                     {item.creator && <sub>{item.creator}</sub>}
                     {item.description && <p>{item.description}</p>}
                   </div>
