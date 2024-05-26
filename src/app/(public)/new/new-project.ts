@@ -54,17 +54,27 @@ export function handleGithub(
         items: [] as CommandItems[],
     };
 
-    getUserRepos(username).then((data) => {
-        data.map((repo: any) => {
-            const title = repo.clone_url.split(".com/")[1].replace(".git", "");
 
-            commandItem.items.push({
-                title: title,
-                action: repo.clone_url,
+    try {
+
+        getUserRepos(username).then((data) => {
+            data.map((repo: any) => {
+                const title = repo.clone_url.split(".com/")[1].replace(".git", "");
+
+                commandItem.items.push({
+                    title: title,
+                    action: repo.clone_url,
+                    branch: repo.branch,
+                });
             });
+            setProjects(commandItem);
         });
-        setProjects(commandItem);
-    });
+
+    } catch (e) {
+        console.error("[handleGithub]:", e)
+    }
+
+
 }
 
 export function handleTemplates(
@@ -77,8 +87,11 @@ export function handleTemplates(
         items: [] as CommandItems[],
     };
 
+
+
     try {
-        const templates = getTemplatesFromRailway().then((data) => {
+
+        getTemplatesFromRailway().then((data) => {
 
             data.map((template) => {
 
@@ -88,9 +101,10 @@ export function handleTemplates(
                     description: template.node.metadata.description,
                 });
             });
-
             setProjects(commandItem);
+
         });
+
     } catch (error) {
         console.error("[handleTemplates]:", error);
     }

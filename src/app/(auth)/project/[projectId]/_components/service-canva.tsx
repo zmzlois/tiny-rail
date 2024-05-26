@@ -128,7 +128,7 @@ const AddNewService = ({ path }: { path: string }) => {
       <h3 className="text-lg font-medium text-start py-4">
         No services in this project..yet{" "}
       </h3>
-      <Link href={`/project/${path.split("/")[2]}/service/new`}>
+      <Link href={`/new?project=${path.split("/")[2]}`}>
         <Button
           variant={"outline"}
           className="flex items-center gap-2 bg-background brightness-150 text-white p-2 rounded-md"

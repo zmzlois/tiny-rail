@@ -36,6 +36,10 @@ export default function Page() {
   }
 
   useEffect(() => {
+    if (!username) setAuthed(false);
+
+    setAuthed(true);
+
     const item =
       projects !== "loading"
         ? projects !== "creating" &&
@@ -44,12 +48,9 @@ export default function Page() {
 
     if (action === "" || !action) setProjects(newProject);
     if (action === "github") {
-      if (!username || username === "") setAuthed(false);
-      setProjects("loading");
       handleGithub(setProjects, username);
     }
     if (action === "templates") {
-      setProjects("loading");
       handleTemplates(setProjects);
     }
 
@@ -66,7 +67,7 @@ export default function Page() {
   return (
     <div>
       <ProjectCommand props={projects} onSelect={handleSelect} path={path} />
-      {!authed && (
+      {authed === false && (
         <SignInDialog
           triggerText="Sign in to Github"
           open={!authed}

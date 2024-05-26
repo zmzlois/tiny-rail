@@ -28,6 +28,7 @@ export type CommandItems = {
   repo?: string;
   creator?: string;
   action?: string;
+  branch?: string;
 };
 
 export type ProjectCommandProps =
@@ -62,7 +63,7 @@ export const ProjectCommand = ({
           <span className="text-primary text-sm">Back</span>
         </button>
         <DialogPrimitive.Close
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.back()}
           className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 z-30 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
         >
           <Cross2Icon className="h-4 w-4" />
@@ -80,7 +81,7 @@ export const ProjectCommand = ({
         </h3>{" "}
         <CommandInput placeholder={"Deploy a new project by typing..."} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>Loading...</CommandEmpty>
           <CommandGroup>
             {props === "loading" ? (
               <MultiLayerLoading />
