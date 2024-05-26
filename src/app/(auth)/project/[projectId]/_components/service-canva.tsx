@@ -25,6 +25,7 @@ const getRandomWidthClass = (id: number) =>
   randomWidths[id % randomWidths.length];
 
 export const ServiceCanva = ({ projectId }: { projectId: string }) => {
+  console.log("projectId", projectId);
   const path = usePathname();
   const [className, setClassName] = useState("");
   const { data, error, isLoading } = useQuery({

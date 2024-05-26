@@ -28,11 +28,9 @@ export const ServiceDetails = ({
             return {
               id: item.id,
               name: item.name,
-              environmentId: item.deployments.edges.map(
-                (item) => item.environmentId
-              ),
-              url: item.deployments.edges.map((item) => item.node.staticUrl),
-              updatedAt: item.node.updatedAt,
+              // environmentId:
+              //  url:
+              updatedAt: item.updatedAt,
             };
           }),
         };
@@ -42,21 +40,21 @@ export const ServiceDetails = ({
 
   const service = data?.services.find((service) => service.id === serviceId);
 
-  const serviceUrl = service?.url ? service.url[0] : null;
+  // const serviceUrl = service?.url ? service.url[0] : null;
 
   function handleRedeploy() {
     toast.info("Redeploying service");
-    redeployService({
-      serviceId,
-      environmentId: service!.environmentId[0],
-    })
-      .then((res) => {
-        toast.success("Service redeployed successfully");
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Failed to redeploy service");
-      });
+    // redeployService({
+    //   serviceId,
+    //   environmentId: service!.environmentId[0],
+    // })
+    // .then((res) => {
+    //   toast.success("Service redeployed successfully");
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   toast.error("Failed to redeploy service");
+    // });
   }
 
   if (isLoading)
@@ -85,11 +83,11 @@ export const ServiceDetails = ({
         <Separator />
         <div className="grid grid-cols-4 w-full gap-2 items-center ">
           <div className="col-span-3">
-            {serviceUrl ? (
+            {/* {serviceUrl ? (
               <DeploymentCard url={serviceUrl} updatedAt={service!.updatedAt} />
             ) : (
               ""
-            )}
+            )} */}
           </div>
           <Button
             variant={"outline"}
@@ -104,7 +102,7 @@ export const ServiceDetails = ({
       <DestroyCard
         serviceId={serviceId}
         projectId={projectId}
-        environmentId={service!.environmentId[0]}
+        // environmentId={service!.environmentId[0]}
       />
     </ServiceMajorCard>
   );

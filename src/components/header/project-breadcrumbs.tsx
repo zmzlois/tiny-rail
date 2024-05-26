@@ -141,7 +141,7 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
               <div key={item.name}>
                 <DropdownMenuItem className="py-2 w-full px-3">
                   <Link
-                    href={`/project/${item.externalId}`}
+                    href={`/project/${item.id}`}
                     className="text-base text-primary/80 tracking-wide"
                   >
                     {item.name}

@@ -14,7 +14,14 @@ import { create } from "domain"
 import { generate } from "@/lib/generate-name"
 const teamId = env.RAILWAY_TEAM_ID
 
+export async function findProjectInDb(input: { projectId: string }) {
 
+    const project = await db.select().from(projects).where(eq(projects.id, input.projectId)).then((res) => res[0])
+
+    if (!project) throw new CustomError("project not found")
+
+    return project;
+}
 
 
 export default async function getTemplatesFromRailway() {
@@ -126,6 +133,14 @@ export async function getProjectById(input: { projectId: string | null }) {
 
     if (!projectId) throw new CustomError("projectId not found")
 
+    const externalId = await findProjectInDb({ projectId: projectId }).then((res) => res.externalId)
+
+    if (!externalId) throw new CustomError("project's external Id not found")
+
+    console.log('externalId', externalId)
+
+    await getProjectByIdFromRailway({ projectId, externalId }, await client1())
+
     const project = await db.select().from(projects).where(eq(projects.id, projectId)).then((res) => res[0])
 
 
@@ -136,6 +151,74 @@ export async function getProjectById(input: { projectId: string | null }) {
     if (!servicesInProject) throw new CustomError("no service found in project")
 
     return { project, services: servicesInProject }
+
+}
+
+export async function getProjectByIdFromRailway(input: { projectId: string, externalId: string }, gql?: Client) {
+    if (!gql) gql = await client1()
+
+    console.log("input.projectId", input.projectId)
+
+
+
+    const serviceInPj = await gql.query({
+        project: {
+            __args: {
+                id: input.externalId
+            },
+            __scalar: true,
+
+            id: true,
+            name: true,
+            __typename: true,
+            environments: {
+                edges: {
+                    node: {
+                        id: true,
+                        __scalar: true
+
+                    }
+                }
+            },
+            services: {
+                edges: {
+                    node: {
+                        id: true,
+                        name: true,
+                        __scalar: true,
+                        deployments: {
+                            edges: {
+                                node: {
+                                    id: true,
+                                    staticUrl: true,
+                                    __scalar: true
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        }
+    })
+
+    if (!serviceInPj) return console.log("Services in project not found")
+
+    return serviceInPj.project.services.edges.map(async (data) => {
+
+        const findService = await db.select().from(services).where(eq(services.externalId, data.node.id)).then((res) => res[0])
+
+        if (findService) return findService;
+        return db.insert(services).values({
+            externalId: data.node.id,
+            projectId: input.projectId,
+            name: data.node.name,
+            url: data.node.deployments.edges[0].node.staticUrl ?? null
+        }).returning().then((res) => res)
+
+    })
+
 
 }
 export async function getProjectsFromRailway(client: Client) {

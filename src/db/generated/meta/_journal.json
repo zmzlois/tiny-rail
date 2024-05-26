@@ -85,6 +85,13 @@
       "when": 1716740691962,
       "tag": "0021_rare_deathbird",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1716744383066,
+      "tag": "0022_youthful_sebastian_shaw",
+      "breakpoints": true
     }
   ]
 }
