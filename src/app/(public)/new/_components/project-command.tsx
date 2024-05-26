@@ -36,7 +36,8 @@ export type ProjectCommandProps =
       placeholder?: string;
       items: CommandItems[];
     }
-  | "loading";
+  | "loading"
+  | "creating";
 
 export const ProjectCommand = ({
   props,
@@ -48,7 +49,6 @@ export const ProjectCommand = ({
   path: string;
 }) => {
   const router = useRouter();
-  console.log("path", path);
 
   return (
     <div>
@@ -69,7 +69,14 @@ export const ProjectCommand = ({
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
         <h3 className="text-lg font-semibold text-center py-4">
-          {props === "loading" ? <LoadingComponent /> : props.title}
+          {props === "loading" ? (
+            <LoadingComponent />
+          ) : props === "creating" ? (
+            // TODO: Implement creating state.
+            "Creating..."
+          ) : (
+            props.title
+          )}
         </h3>{" "}
         <CommandInput placeholder={"Deploy a new project by typing..."} />
         <CommandList>
@@ -77,7 +84,10 @@ export const ProjectCommand = ({
           <CommandGroup>
             {props === "loading" ? (
               <MultiLayerLoading />
+            ) : props === "creating" ? (
+              ""
             ) : (
+              // "TODO: Implement creating state."
               props.items.map((item) => (
                 <CommandItem
                   key={item.title}

@@ -97,52 +97,45 @@ type Project = {
     name: string;
 };
 
+export async function syncServiceInProjectFromRailway(input: { projectId: string }) {
+
+    const gql = await client1()
+
+    const result = await gql.query({
+        project: {
+            __args: {
+                id: input.projectId
+            },
+            __scalar: true,
+            edges: {
+                node: {
+                    __scalar: true,
+                    id: true,
+                    name: true,
+                    __typename: true
+                }
+            }
+        }
+    })
+
+}
+
 export async function getProjectById(input: { projectId: string | null }) {
 
     const { projectId } = input;
 
-    const client = await client1();
-
     if (!projectId) throw new CustomError("projectId not found")
 
-    return client.query({
-        project: {
-            __args: {
-                id: projectId
-            },
-            __scalar: true,
-            services: {
-                edges: {
-                    node: {
-                        __scalar: true,
-                        deployments: {
-                            edges: {
-                                node: {
-                                    __scalar: true,
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            deployments: {
-                __args: {
-                    last: 1,
-                },
-                edges: {
-                    node: {
-                        __scalar: true
-                    }
-                }
-            }
-        }
-    }).then((res) => {
-        return {
-            project: res.project,
-            service: res.project.services,
-            deployUrl: res.project.deployments.edges[0] ? res.project.deployments.edges[0].node.staticUrl : ""
-        }
-    })
+    const project = await db.select().from(projects).where(eq(projects.id, projectId)).then((res) => res[0])
+
+
+    if (!project) throw new CustomError("project not created")
+
+    const servicesInProject = await db.select().from(services).where(eq(services.projectId, projectId)).then((res) => res)
+
+    if (!servicesInProject) throw new CustomError("no service found in project")
+
+    return { project, services: servicesInProject }
 
 }
 export async function getProjectsFromRailway(client: Client) {
@@ -162,83 +155,69 @@ export async function getProjectsFromRailway(client: Client) {
         }
     })
 
-    return result.then((res) => res.projects.edges.map((data) => data.node))
+    return result.then((res) => res.projects.edges.map((data) => {
+        return db.insert(projects).values({
+            name: data.node.name,
+            externalId: data.node.id,
+            workspaceId: 'faxle5bb7mbgzwnp'
+        }).returning().then((res) => res)
+
+    }))
 
 }
 
 export async function getProjectByDefaultWorkspace() {
     const workspace = await getDefaultWorkspaceByUserId()
-    const gql = await client1()
-    // if the workspace is Lois's team account test how it looks like
-    // TODO: comment back in or sth
-    // if (workspace.name === "zmzlois") {
 
-    return (await getProjectsFromRailway(gql)).map((item) => {
-        return {
-            externalId: item.id,
-            updateAt: item.updatedAt,
-            ...item,
-        }
-    })
-
-    // }
+    // added to sync services from Railway
+    // await getProjectsFromRailway(await client1())
 
     // get the external project id to fetch from Railway
-    return db.select().from(projects).where(eq(projects.id, workspace.id))
+    const projectInWs = await db.select().from(projects).where(eq(projects.workspaceId, workspace.id))
+
+    if (!projectInWs) throw new CustomError("project not found")
+
+    return projectInWs;
 }
 
 
-export async function createNewProject(input: { repoBranch?: string, repoName?: string }, gql?: Client) {
+export async function createNewProject() {
 
     const projectName = generate()
-
-    if (!input.repoName) throw new CustomError("projectName not found")
-    if (!input.repoBranch) throw new CustomError("input.repoBranch not found")
-
     const workspace = await getDefaultWorkspaceByUserId()
 
     if (!workspace) throw new CustomError("workspace not found")
 
-    if (!gql) gql = await client1()
+
 
     try {
-        const createRaiwayProject = await gql.mutation({
-            projectCreate: {
-                __args: {
-                    input: {
-                        defaultEnvironmentName: "production",
-                        description: "",
-                        name: projectName,
-                        teamId: teamId,
-                        repo: {
-                            branch: input.repoBranch,
-                            fullRepoName: input.repoName
-                        }
-                    }
-                },
-                id: true,
-                __scalar: true,
-                environments: {
-                    edges: {
-                        node: {
-                            id: true,
-                            __scalar: true
-                        }
-
-                    }
-                }
-            }
-        }
-        )
-        const createProjectInDb = await db.insert(projects).values({
+        return db.insert(projects).values({
             name: projectName,
-            externalId: createRaiwayProject.projectCreate.id,
+            externalId: process.env.RAILWAY_PROJECT_ID,
             workspaceId: workspace.id
-        })
-        return { createRaiwayProject, createProjectInDb }
+        }).returning().then((res) => res[0])
     } catch (e) {
         console.log(e)
         throw new CustomError("Failed to create project: " + e)
     }
 
-} 
+}
+
+
+export async function createEmptyProject() {
+    const projectName = generate()
+    const workspace = await getDefaultWorkspaceByUserId()
+
+    if (!workspace) throw new CustomError("workspace not found")
+
+    try {
+        return db.insert(projects).values({
+            name: projectName,
+            externalId: process.env.RAILWAY_PROJECT_ID,
+            workspaceId: workspace.id
+        }).returning().then((res) => res[0])
+    } catch (e) {
+        console.log(e)
+        throw new CustomError("Failed to create project: " + e)
+    }
+}

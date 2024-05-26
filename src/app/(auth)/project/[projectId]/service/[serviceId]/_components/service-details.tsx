@@ -24,16 +24,14 @@ export const ServiceDetails = ({
       return getProjectById({ projectId }).then((res) => {
         return {
           projectName: res.project.name! as string,
-          services: res.service.edges.map((item) => {
+          services: res.services.map((item) => {
             return {
-              id: item.node.id,
-              name: item.node.name,
-              environmentId: item.node.deployments.edges.map(
-                (item) => item.node.environmentId
+              id: item.id,
+              name: item.name,
+              environmentId: item.deployments.edges.map(
+                (item) => item.environmentId
               ),
-              url: item.node.deployments.edges.map(
-                (item) => item.node.staticUrl
-              ),
+              url: item.deployments.edges.map((item) => item.node.staticUrl),
               updatedAt: item.node.updatedAt,
             };
           }),
@@ -53,7 +51,6 @@ export const ServiceDetails = ({
       environmentId: service!.environmentId[0],
     })
       .then((res) => {
-        console.log(res);
         toast.success("Service redeployed successfully");
       })
       .catch((err) => {

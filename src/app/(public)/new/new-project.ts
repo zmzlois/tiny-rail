@@ -4,6 +4,45 @@ import type { ProjectCommandProps, CommandItems } from "@/app/(public)/new/_comp
 import { getUserRepos } from "@/server/github";
 import getTemplatesFromRailway from "@/server/projects";
 import { QueryTemplatesConnectionEdge } from "@/lib/api";
+import { createService } from "@/server/service";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
+
+export const newProject: ProjectCommandProps = {
+    title: "New Project",
+    placeholder: "Deploy a new project by typing...",
+    items: [
+        {
+            title: "Deploy from Github repo",
+            action: "github",
+        },
+        {
+            title: "Deploy from templates",
+            action: "templates",
+        },
+        {
+            title: "Deploy Postgres",
+            action: "postgres",
+            image: "ghcr.io/railwayapp-templates/postgres-ssl:latest",
+        },
+        {
+            title: "Deploy Redis",
+            action: "redis",
+            image: "bitnami/redis",
+        },
+        {
+            title: "Deploy MySQL",
+            action: "mysql",
+            image: "mysql",
+        },
+        {
+            title: "Deploy MongoDB",
+            action: "mongodb",
+            image: "mongo",
+        },
+    ],
+};
+
 
 export function handleGithub(
     setProjects: Dispatch<ProjectCommandProps>,
@@ -42,7 +81,6 @@ export function handleTemplates(
         const templates = getTemplatesFromRailway().then((data) => {
 
             data.map((template) => {
-                console.log("template", template.node)
 
                 commandItem.items.push({
                     code: template.node.code,
@@ -60,8 +98,40 @@ export function handleTemplates(
 
 }
 
-export function handleRedis(setProjects: Dispatch<ProjectCommandProps>) {
+export function handleDatabase(item: CommandItems, setProjects: Dispatch<ProjectCommandProps>) {
 
+    setProjects("creating");
+
+
+    const name = item.title.split(" ").pop()!;
+
+    toast.info("Trying to deploy " + name + "...");
+
+
+
+    try {
+        return createService({ source: { source: item.image, type: "image", name } }).then((data) => {
+
+            if (!data) {
+                toast.error("Failed to deploy " + name);
+                return;
+            }
+
+            if (!data.projectId || !data.id) {
+                toast.error("Failed to deploy " + name);
+                return;
+            }
+
+            toast.success("Deployed " + name + " successfully");
+            return redirect(`/project/${data.projectId}/service/${data.id}`);
+        })
+    } catch (error) {
+        console.error("[handleDatabase]:", error);
+
+        setProjects(newProject)
+
+        toast.error("Failed to deploy " + item.title + "\n Please try again later.");
+    }
 
 
 }

@@ -1,12 +1,13 @@
 import { ProjectSection } from "./_components/project-section";
 import { SelectWorkspace } from "./_components/select-workspace";
-import { CreateProject } from "./_components/create-project";
+import { CreateProject } from "../../../components/create-project";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
 import { getProjectByDefaultWorkspace } from "@/server/projects";
+import { CreateEmptyProject } from "./_components/project-empty";
 
 export default async function Page() {
   const queryClient = new QueryClient();
@@ -24,7 +25,7 @@ export default async function Page() {
         <div className="flex items-center justify-between">
           {" "}
           <SelectWorkspace />
-          <CreateProject />
+          <CreateEmptyProject />
         </div>
         <ProjectSection />
       </div>

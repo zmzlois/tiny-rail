@@ -4,7 +4,7 @@ import { selectProjectSchema, selectServiceSchema } from "@/db/schema/project";
 import { QueryProjectsConnectionEdge } from "@/lib/api";
 
 type Project = {
-  externalId: string;
+  id: string;
   name: string;
 };
 export const ProjectCard = ({
@@ -18,8 +18,8 @@ export const ProjectCard = ({
 
   return (
     <Link
-      href={`/project/${project.externalId}`}
-      className="rounded-lg bg-zinc-800/60 hover:bg-zinc-800/80 group border p-4 py-8 flex flex-col gap-16 lg:w-[calc(30%-1rem)] sm:w-[30%] w-[90%]  "
+      href={`/project/${project.id}`}
+      className="rounded-lg bg-zinc-800/60 hover:bg-zinc-800/80 group border p-4 py-8 flex flex-col gap-16 lg:min-w-[calc(20vw-1rem)] sm:w-[30%] w-[90%]  "
     >
       <h3 className="text-lg text-foreground/80 group:hover:text-foreground">
         {project.name}

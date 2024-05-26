@@ -5,14 +5,18 @@ import {
   ProjectCommandProps,
   CommandItems,
 } from "./_components/project-command";
-
 import { useEffect, useMemo, useRef } from "react";
 import { useStore } from "@/store/user";
 import { useSearchParams } from "next/navigation";
 import appendSearchParam from "@/lib/useAppendSearchParam";
 import { SignInDialog } from "@/components/sign-in-dialog";
 import { usePathname } from "next/navigation";
-import { handleGithub, handleTemplates } from "./new-project";
+import {
+  handleDatabase,
+  handleGithub,
+  handleTemplates,
+  newProject,
+} from "./new-project";
 
 export default function Page() {
   const [projects, setProjects] =
@@ -32,6 +36,12 @@ export default function Page() {
   }
 
   useEffect(() => {
+    const item =
+      projects !== "loading"
+        ? projects !== "creating" &&
+          projects.items.find((item) => item.action === action)
+        : null;
+
     if (action === "" || !action) setProjects(newProject);
     if (action === "github") {
       if (!username || username === "") setAuthed(false);
@@ -42,7 +52,17 @@ export default function Page() {
       setProjects("loading");
       handleTemplates(setProjects);
     }
-  }, [path, username, action]);
+
+    if (
+      action === "postgres" ||
+      action === "redis" ||
+      action === "mysql" ||
+      action === "mongodb"
+    ) {
+      setProjects("creating");
+      item && handleDatabase(item, setProjects);
+    }
+  }, [path, username, action, projects]);
   return (
     <div>
       <ProjectCommand props={projects} onSelect={handleSelect} path={path} />
@@ -56,38 +76,3 @@ export default function Page() {
     </div>
   );
 }
-
-const newProject: ProjectCommandProps = {
-  title: "New Project",
-  placeholder: "Deploy a new project by typing...",
-  items: [
-    {
-      title: "Deploy from Github repo",
-      action: "github",
-    },
-    {
-      title: "Deploy from templates",
-      action: "templates",
-    },
-    {
-      title: "Deploy Postgres",
-      action: "postgres",
-      image: "ghcr.io/railwayapp-templates/postgres-ssl:latest",
-    },
-    {
-      title: "Deploy Redis",
-      action: "redis",
-      image: "bitnami/redis",
-    },
-    {
-      title: "Deploy MySQL",
-      action: "mysql",
-      image: "mysql",
-    },
-    {
-      title: "Deploy MongoDB",
-      action: "mongodb",
-      image: "mongo",
-    },
-  ],
-};

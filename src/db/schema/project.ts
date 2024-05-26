@@ -13,7 +13,7 @@ import { users } from "./user";
 
 export const projects = pgTable("projects", {
     externalId: varchar("external_id"),
-    name: varchar("name").notNull(),
+    name: varchar("name").notNull().unique(),
     description: varchar("description"),
     image: varchar("image"),
     workspaceId: varchar("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
@@ -23,7 +23,7 @@ export const projects = pgTable("projects", {
 export const selectProjectSchema = createSelectSchema(projects)
 
 export const services = pgTable("project_services", {
-    externalId: varchar("external_id"),
+    externalId: varchar("external_id").unique(),
     name: varchar("name"),
     description: varchar("description"),
     image: varchar("image"),

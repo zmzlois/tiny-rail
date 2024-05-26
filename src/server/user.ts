@@ -38,6 +38,7 @@ export async function fetchMe() {
 export async function fetchUser() {
     const result = await getUser();
 
+
     if (!('user' in result)) throw new Error("User not found");
 
     if ('user' in result) {

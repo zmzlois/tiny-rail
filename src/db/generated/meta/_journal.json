@@ -71,6 +71,20 @@
       "when": 1716647796472,
       "tag": "0019_faulty_proemial_gods",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1716739304814,
+      "tag": "0020_easy_hardball",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1716740691962,
+      "tag": "0021_rare_deathbird",
+      "breakpoints": true
     }
   ]
 }

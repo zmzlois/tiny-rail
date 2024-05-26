@@ -32,21 +32,14 @@ export const ServiceCanva = ({ projectId }: { projectId: string }) => {
     queryFn: async () => {
       return getProjectById({ projectId }).then((res) => {
         return {
-          projectName: res.project.name! as string,
-          services: res.service.edges.map((item) => {
-            return {
-              id: item.node.id,
-              name: item.node.name,
-              updatedAt: item.node.updatedAt,
-            };
-          }),
+          projectName: res.project.id! as string,
+          services: res.services,
         };
       });
     },
   });
 
   useMemo(() => {
-    console.log("path", path);
     if (!path.includes("service")) {
       setClassName("grid-cols-2 h-1/3 w-1/2");
     } else if (path.includes("service")) {
@@ -93,7 +86,7 @@ export const ServiceCanva = ({ projectId }: { projectId: string }) => {
 
   if (!data) return <AddNewService path={path} />;
 
-  if (data.services.length === 0) return <AddNewService path={path} />;
+  if (data.services.length < 1) return <AddNewService path={path} />;
 
   return (
     <div
@@ -104,24 +97,26 @@ export const ServiceCanva = ({ projectId }: { projectId: string }) => {
     >
       {" "}
       {data.services.length >= 1 &&
-        data.services.map((item, index) => (
-          <Link
-            href={`/project/${projectId}/service/${item.id}`}
-            key={item.name}
-            className="w-[250px] m-2"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>{item.name}</CardTitle>
-                <CardDescription></CardDescription>
-              </CardHeader>
+        data.services.map((item, index) => {
+          return (
+            <Link
+              href={`/project/${projectId}/service/${item.id}`}
+              key={item.id}
+              className="w-[250px] m-2"
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>{item.name}</CardTitle>
+                  <CardDescription></CardDescription>
+                </CardHeader>
 
-              <CardFooter>
-                <p>Updated at: {item.updatedAt.split("T")[0]}</p>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+                <CardFooter>
+                  <p>Updated at: {item.updatedAt.split("T")[0]}</p>
+                </CardFooter>
+              </Card>
+            </Link>
+          );
+        })}
     </div>
   );
 };

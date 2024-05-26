@@ -1,17 +1,18 @@
 "use client";
-import { getProjectByDefaultWorkspace } from "@/server/projects";
+import {
+  createEmptyProject,
+  getProjectByDefaultWorkspace,
+} from "@/server/projects";
 import { ProjectCard } from "./project-card";
 import { useQuery } from "@tanstack/react-query";
-import { useStore } from "@/store/user";
-import { useEffect, useMemo } from "react";
-
+import { CreateEmptyProject } from "./project-empty";
 export const ProjectSection = () => {
   const { data, error, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       return (await getProjectByDefaultWorkspace()).map((res) => {
         return {
-          externalId: res.externalId!,
+          id: res.id,
           name: res.name,
         };
       });
@@ -27,13 +28,16 @@ export const ProjectSection = () => {
   if (!data) return <p>You don&apos;t have any projects yet!!</p>;
 
   return (
-    <section className="flex flex-col md:flex-row gap-8">
-      {data ? (
+    <section className="flex flex-col container flex-wrap mx-auto md:flex-row gap-8">
+      {data.length >= 1 ? (
         data.map((item, index: number) => {
           return <ProjectCard key={index} project={item} />;
         })
       ) : (
-        <p>You don&apos;t have any projects yet!!</p>
+        <section className="flex w-full flex-col  items-center justify-center gap-10">
+          <h3>You don&apos;t have any projects yet!!</h3>
+          <CreateEmptyProject />
+        </section>
       )}
     </section>
   );

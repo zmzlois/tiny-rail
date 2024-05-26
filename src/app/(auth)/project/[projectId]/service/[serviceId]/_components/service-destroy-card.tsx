@@ -33,7 +33,6 @@ export const DestroyCard = ({
     if (!serviceId) return console.error("Service ID is missing");
     destroyService({ serviceId, environmentId })
       .then((res) => {
-        console.log(res);
         toast.info("Service deleted successfully");
         router.push(`/project/${projectId}`);
       })

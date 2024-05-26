@@ -1,0 +1,1 @@
+ALTER TABLE "project_services" ADD CONSTRAINT "project_services_external_id_unique" UNIQUE("external_id");
