@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 import type { ProjectCommandProps, CommandItems } from "@/app/(public)/new/_components/project-command"
-
+import { Endpoints } from "@octokit/types";
 import { getUserRepos } from "@/server/github";
 import getTemplatesFromRailway from "@/server/projects";
 import { QueryTemplatesConnectionEdge } from "@/lib/api";
@@ -8,6 +8,9 @@ import { createService } from "@/server/service";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { CustomError } from "@/lib/error";
+import { DatabaseSource } from "@/lib/constants";
+
+type GithubRepo = Endpoints["GET /user/repos"]["response"]["data"][0];
 
 export const newProject: ProjectCommandProps = {
 
@@ -57,16 +60,15 @@ export function handleGithub(
     };
 
 
-
-
     getUserRepos(username).then((data) => {
-        data.map((repo: any) => {
-            const title = repo.clone_url.split(".com/")[1].replace(".git", "");
+        data.map((repo) => {
+            const title = repo.clone_url!.split(".com/")[1].replace(".git", "");
+
 
             commandItem.items.push({
                 title: title,
                 action: title,
-                repoUrl: repo.clone_url,
+                repoUrl: repo.full_name,
                 branch: repo.branch,
             });
         });
@@ -119,7 +121,7 @@ export function handleDatabase(item: CommandItems, setProjects: Dispatch<Project
     setProjects("creating");
 
 
-    const name = item.title.split(" ").pop()!;
+    const name = item.title.split(" ").pop()! as DatabaseSource
 
     toast.info("Trying to deploy " + name + "...");
 
@@ -154,7 +156,7 @@ export function handleDatabase(item: CommandItems, setProjects: Dispatch<Project
 
 export function handleRepoDeploy(item: CommandItems, projectId: string | null) {
 
-    console.log("[handleRepoDeloy]: item", item);
+    console.table(item);
 
     if (!item.repoUrl) throw new CustomError("No repoUrl provided");
 
@@ -175,6 +177,7 @@ export function handleRepoDeploy(item: CommandItems, projectId: string | null) {
         }
 
         toast.success("Deployed " + item.title + " successfully");
-        return redirect(`/project/${data.projectId}/service/${data.id}`);
+        return redirect(`/project/${projectId}/service/${data.id}`);
     });
+    return redirect(`/project/${projectId}`);
 }

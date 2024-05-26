@@ -41,13 +41,6 @@ export default function Page() {
   }
 
   useEffect(() => {
-    console.table({
-      path,
-      authed,
-      action,
-      projectId,
-    });
-
     const item =
       projects !== "loading"
         ? projects !== "creating" &&

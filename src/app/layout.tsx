@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Tiny Rail",
-  description: "Light Railway communicating with Railway GQL",
+  description: "Light mock of Railway",
 };
 
 export default async function RootLayout({

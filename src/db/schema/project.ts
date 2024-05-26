@@ -36,7 +36,6 @@ export const services = pgTable("project_services", {
 export const selectServiceSchema = createSelectSchema(services)
 
 export const environments = pgTable("project_environments", {
-    name: varchar("name"),
     projectId: varchar("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
     ...externalBase,
 })

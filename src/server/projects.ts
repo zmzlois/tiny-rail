@@ -12,6 +12,7 @@ import { CustomError } from "@/lib/error"
 
 import { create } from "domain"
 import { generate } from "@/lib/generate-name"
+import { getProjectEnvironment } from "./environment"
 const teamId = env.RAILWAY_TEAM_ID
 
 export async function findProjectInDb(input: { projectId: string }) {
@@ -210,24 +211,15 @@ export async function getProjectByIdFromRailway(input: { projectId: string, exte
 
         const findService = await db.select().from(services).where(eq(services.externalId, data.node.id)).then((res) => res[0])
 
-        const findEnvironment = await db.select().from(environments).where(eq(environments.externalId, serviceInPj.project.environments.edges[0].node.id)).then((res) => res[0])
-        if (!findEnvironment) return db.insert(environments).values({
-            externalId: serviceInPj.project.environments.edges[0].node.id,
-            projectId: input.projectId,
-            name: serviceInPj.project.environments.edges[0].node.name,
-        }).returning().then((res) => res)
+        const environment = await getProjectEnvironment({ projectId: input.projectId }).then((res) => res)
 
 
-        if (findService) return db.update(services).set({
-            name: data.node.name,
-            environmentId: findEnvironment.id,
-            url: data.node.deployments.edges[0] ? data.node.deployments.edges[0].node.staticUrl : ""
-        }).where(eq(services.externalId, data.node.id)).returning().then((res) => res)
+
 
         return db.insert(services).values({
             externalId: data.node.id,
             projectId: input.projectId,
-            environmentId: findEnvironment.id,
+            environmentId: environment.id,
             name: data.node.name,
             url: data.node.deployments.edges[0] ? data.node.deployments.edges[0].node.staticUrl : ""
         }).returning().then((res) => res)

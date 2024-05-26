@@ -10,6 +10,8 @@ import { environments, services } from "@/db/schema/project"
 import { z } from "zod"
 import { eq } from "drizzle-orm"
 import { selectProjectSchema } from "@/db/schema/project"
+import { variables, DatabaseSource } from "@/lib/constants"
+import { getProjectEnvironment } from "./environment"
 
 
 
@@ -22,7 +24,7 @@ type Source = {
 } | {
     type: "image"
     source?: string
-    name: string
+    name: DatabaseSource
 }
 
 export async function createServiceInDb(input: { externalId: string, projectId: string, name: string }) {
@@ -60,8 +62,6 @@ export async function createService(input: { source: Source, projectId: string |
 
     console.log("[createService]:", input)
 
-
-    let variables = {}
     let newProject: z.infer<typeof selectProjectSchema> | undefined;
 
     if (!input.projectId) {
@@ -77,47 +77,39 @@ export async function createService(input: { source: Source, projectId: string |
     if (!input.source.source) throw new CustomError("input.source.source not found");
 
 
+    const environment = await getProjectEnvironment({ projectId: input.projectId })
+
 
     if (input.source.type === "image") {
 
-        if (input.source.source === "mysql") {
-            variables = {
-                "MYSQLDATABASE": "${{MYSQL_DATABASE}}",
-                "MYSQLHOST": "${{RAILWAY_TCP_PROXY_DOMAIN}}",
-                "MYSQLPASSWORD": "${{MYSQL_ROOT_PASSWORD}}",
-                "MYSQLPORT": "${{RAILWAY_TCP_PROXY_PORT}}",
-                "MYSQLUSER": "root",
-                "MYSQL_DATABASE": "railway",
-                "MYSQL_PRIVATE_URL": "mysql://${{MYSQLUSER}}:${{MYSQL_ROOT_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:3306/${{MYSQL_DATABASE}}",
-                "MYSQL_ROOT_PASSWORD": "raWJgYxAmOjrwSEXUnukZNuSoqxdaIRS",
-                "MYSQL_URL": "mysql://${{MYSQLUSER}}:${{MYSQL_ROOT_PASSWORD}}@${{RAILWAY_TCP_PROXY_DOMAIN}}:${{RAILWAY_TCP_PROXY_PORT}}/${{MYSQL_DATABASE}}"
-            }
-            const newService = await gql.mutation({
-                serviceCreate: {
-                    __args: {
-                        input: {
-                            branch: "main",
-                            environmentId: process.env.RAILWAY_ENVIRONMENT_ID,
-                            projectId: externalId,
-                            name: input.source.name,
-                            source: {
-                                image: input.source.source,
-                                // repo: input.source.source
-                            },
-                            variables: variables
+
+
+        const newService = await gql.mutation({
+            serviceCreate: {
+                __args: {
+                    input: {
+                        branch: "main",
+                        environmentId: environment.externalId,
+                        projectId: externalId,
+                        name: input.source.name,
+                        source: {
+                            image: input.source.source,
+                            // repo: input.source.source
                         },
-
+                        variables: variables({ source: input.source.name })
                     },
-                    __scalar: true
-                }
-            })
 
-            return createServiceInDb({
-                externalId: newService.serviceCreate.id,
-                projectId: input.projectId,
-                name: input.source.name
-            })
-        }
+                },
+                __scalar: true
+            }
+        })
+
+        return createServiceInDb({
+            externalId: newService.serviceCreate.id,
+            projectId: input.projectId,
+            name: input.source.name
+        })
+
 
 
     } else if (input.source.type === "repo") {
@@ -161,6 +153,8 @@ export async function destroyService(input: { serviceId?: string, projectId: str
     if (!serviceId) throw new CustomError("serviceId not found")
 
     const environmentId = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0].externalId)
+
+    const deleteService = await db.delete(services).where(eq(services.id, input.serviceId)).returning()
 
     console.table({ serviceId, environmentId })
     try {

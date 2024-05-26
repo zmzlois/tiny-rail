@@ -1,0 +1,1 @@
+ALTER TABLE "project_environments" DROP COLUMN IF EXISTS "name";

@@ -10,7 +10,7 @@ export const CreateService = ({
   params: { projectId: string };
 }) => {
   return (
-    <div className=" absolute top-28 right-10 aspect-video ">
+    <div className=" absolute top-28 z-30 right-10 aspect-video ">
       <Link
         href={`/new?project=${params.projectId}&service=true`}
         className="flex items-center border rounded-md py-2 px-3 border-purple-600/60 space-x-2 cursor-pointer border-dotted "

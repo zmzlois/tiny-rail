@@ -131,7 +131,7 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
         </BreadcrumbSeparator>
         <DropdownMenu>
           <DropdownMenuTrigger className="flex gap-2 items-center">
-            <p className="text-base text-primary/80 tracking-wide">
+            <p className="text-primary/80 tracking-wide">
               {update.projectName ? update.projectName : "Not found"}
             </p>{" "}
             <ChevronDownIcon />
