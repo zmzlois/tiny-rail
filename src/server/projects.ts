@@ -9,16 +9,11 @@ import { db, projects } from "@/db"
 import { eq } from "drizzle-orm"
 import { services } from "@/db/schema/project"
 import { CustomError } from "@/lib/error"
-import { uniqueNamesGenerator, adjectives, colors, animals } from "unique-names-generator";
-import { Config } from "unique-names-generator";
+
 import { create } from "domain"
+import { generate } from "@/lib/generate-name"
 const teamId = env.RAILWAY_TEAM_ID
 
-const customConfig: Config = {
-    dictionaries: [adjectives, colors, animals],
-    separator: '-',
-    length: 2,
-};
 
 
 
@@ -193,15 +188,18 @@ export async function getProjectByDefaultWorkspace() {
 }
 
 
-export async function createNewProject(input: { repoBranch?: string, repoName?: string }) {
-    const gql = await client1()
-    const projectName = uniqueNamesGenerator(customConfig)
+export async function createNewProject(input: { repoBranch?: string, repoName?: string }, gql?: Client) {
+
+    const projectName = generate()
+
     if (!input.repoName) throw new CustomError("projectName not found")
     if (!input.repoBranch) throw new CustomError("input.repoBranch not found")
 
     const workspace = await getDefaultWorkspaceByUserId()
 
     if (!workspace) throw new CustomError("workspace not found")
+
+    if (!gql) gql = await client1()
 
     try {
         const createRaiwayProject = await gql.mutation({

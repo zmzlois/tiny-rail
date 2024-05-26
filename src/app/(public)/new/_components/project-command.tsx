@@ -24,6 +24,7 @@ export type CommandItems = {
   icon?: React.ReactNode;
   title: string;
   description?: string;
+  image?: string;
   repo?: string;
   creator?: string;
   action?: string;

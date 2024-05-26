@@ -40,9 +40,9 @@ export default function Page() {
     }
     if (action === "templates") {
       setProjects("loading");
-      handleTemplates(setProjects, username);
+      handleTemplates(setProjects);
     }
-  }, [path, action]);
+  }, [path, username, action]);
   return (
     <div>
       <ProjectCommand props={projects} onSelect={handleSelect} path={path} />
@@ -72,22 +72,22 @@ const newProject: ProjectCommandProps = {
     {
       title: "Deploy Postgres",
       action: "postgres",
+      image: "ghcr.io/railwayapp-templates/postgres-ssl:latest",
     },
     {
       title: "Deploy Redis",
       action: "redis",
+      image: "bitnami/redis",
     },
     {
       title: "Deploy MySQL",
       action: "mysql",
+      image: "mysql",
     },
     {
       title: "Deploy MongoDB",
       action: "mongodb",
-    },
-    {
-      title: "Empty project",
-      action: "empty",
+      image: "mongo",
     },
   ],
 };

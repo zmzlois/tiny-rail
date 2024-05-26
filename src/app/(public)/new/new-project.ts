@@ -30,7 +30,7 @@ export function handleGithub(
 
 export function handleTemplates(
     setProjects: Dispatch<ProjectCommandProps>,
-    username: string
+
 ) {
     const commandItem = {
         title: "Select a template",
@@ -58,6 +58,9 @@ export function handleTemplates(
     }
 
 
+}
+
+export function handleRedis(setProjects: Dispatch<ProjectCommandProps>) {
 
 
 
