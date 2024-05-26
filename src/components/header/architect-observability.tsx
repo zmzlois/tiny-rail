@@ -8,6 +8,10 @@ export const ArchitectObservability = () => {
   const router = useRouter();
 
   function handleTabChange() {
+    if (path.includes("/service")) {
+      const route = path.split("/service");
+      router.push(route[0] + "/logs");
+    }
     router.push(path + "/logs");
   }
   return (

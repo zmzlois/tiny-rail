@@ -9,7 +9,16 @@ import { db, projects } from "@/db"
 import { eq } from "drizzle-orm"
 import { services } from "@/db/schema/project"
 import { CustomError } from "@/lib/error"
+import { uniqueNamesGenerator, adjectives, colors, animals } from "unique-names-generator";
+import { Config } from "unique-names-generator";
+import { create } from "domain"
 const teamId = env.RAILWAY_TEAM_ID
+
+const customConfig: Config = {
+    dictionaries: [adjectives, colors, animals],
+    separator: '-',
+    length: 2,
+};
 
 
 
@@ -110,7 +119,14 @@ export async function getProjectById(input: { projectId: string | null }) {
             services: {
                 edges: {
                     node: {
-                        __scalar: true
+                        __scalar: true,
+                        deployments: {
+                            edges: {
+                                node: {
+                                    __scalar: true,
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -129,7 +145,7 @@ export async function getProjectById(input: { projectId: string | null }) {
         return {
             project: res.project,
             service: res.project.services,
-            deployUrl: res.project.deployments.edges[0].node.staticUrl
+            deployUrl: res.project.deployments.edges[0] ? res.project.deployments.edges[0].node.staticUrl : ""
         }
     })
 
@@ -177,6 +193,54 @@ export async function getProjectByDefaultWorkspace() {
 }
 
 
-export async function createProjectById(input: { id: string }) {
+export async function createNewProject(input: { repoBranch?: string, repoName?: string }) {
     const gql = await client1()
+    const projectName = uniqueNamesGenerator(customConfig)
+    if (!input.repoName) throw new CustomError("projectName not found")
+    if (!input.repoBranch) throw new CustomError("input.repoBranch not found")
+
+    const workspace = await getDefaultWorkspaceByUserId()
+
+    if (!workspace) throw new CustomError("workspace not found")
+
+    try {
+        const createRaiwayProject = await gql.mutation({
+            projectCreate: {
+                __args: {
+                    input: {
+                        defaultEnvironmentName: "production",
+                        description: "",
+                        name: projectName,
+                        teamId: teamId,
+                        repo: {
+                            branch: input.repoBranch,
+                            fullRepoName: input.repoName
+                        }
+                    }
+                },
+                id: true,
+                __scalar: true,
+                environments: {
+                    edges: {
+                        node: {
+                            id: true,
+                            __scalar: true
+                        }
+
+                    }
+                }
+            }
+        }
+        )
+        const createProjectInDb = await db.insert(projects).values({
+            name: projectName,
+            externalId: createRaiwayProject.projectCreate.id,
+            workspaceId: workspace.id
+        })
+        return { createRaiwayProject, createProjectInDb }
+    } catch (e) {
+        console.log(e)
+        throw new CustomError("Failed to create project: " + e)
+    }
+
 } 

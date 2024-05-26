@@ -31,27 +31,30 @@ export const Header = ({ user }: { user?: User | undefined }) => {
   return (
     <div
       className={cn(
-        "flex justify-between container mx-auto  items-center py-10 p-4 "
+        "grid grid-cols-3 justify-between container mx-auto  items-center py-10 p-4 "
       )}
     >
-      {path.startsWith("/project") ? (
-        <ProjectBreadcrumb path={path} />
-      ) : (
-        <Link href="/" className="flex items-center gap-2">
-          {!path.startsWith("/new") ? (
-            <>
-              <h3 className="font-semibold text-xl">Tiny Rail</h3>
-              <sub>v1</sub>
-            </>
-          ) : (
-            <h3 className="font-semibold">New Project</h3>
-          )}
-        </Link>
-      )}
-      {path.startsWith("/project") && <ArchitectObservability />}
-
+      <div className="col-span-1 flex items-center gap-4">
+        {path.startsWith("/project") ? (
+          <ProjectBreadcrumb path={path} />
+        ) : (
+          <Link href="/" className="flex items-center gap-2">
+            {!path.startsWith("/new") ? (
+              <>
+                <h3 className="font-semibold text-xl">Tiny Rail</h3>
+                <sub>v1</sub>
+              </>
+            ) : (
+              <h3 className="font-semibold">New Project</h3>
+            )}
+          </Link>
+        )}
+      </div>
+      <div className="flex justify-center col-span-1">
+        {path.startsWith("/project") && <ArchitectObservability />}
+      </div>
       {/* TODO */}
-      <div className="flex space-x-6">
+      <div className="justify-end  flex col-span-1 space-x-6">
         <DashboardButton user={user} path={path} />
       </div>
     </div>

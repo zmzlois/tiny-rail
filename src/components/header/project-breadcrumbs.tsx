@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,6 +38,9 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
     };
   });
 
+  // gl
+  const [currentProject, setCurrentProject] = useState<any>(null);
+
   const {
     data: projects,
     error,
@@ -45,20 +48,25 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
   } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const result = await getProjectByDefaultWorkspace();
-      const name = result.find((res) => res.id === projectId);
-
-      return {
-        currentProject: name,
-        result: result.filter((res) => res.id !== projectId),
-      };
+      return getProjectByDefaultWorkspace();
     },
   });
 
   useEffect(() => {
-    projects?.currentProject &&
-      update.updateProjectName(projects!.currentProject!.name!);
-  }, [projects]);
+    if (!projectId) return;
+
+    const project = projects?.find((res) => res.id === projectId);
+    if (project) {
+      setCurrentProject(project);
+      update.updateProjectName(project.name);
+    }
+  }, [projectId, projects]);
+
+  const name = (projects ?? []).find((res) => res.id === projectId);
+
+  // useEffect(() => {
+  //   currentProject && update.updateProjectName(currentProject.name!);
+  // }, [currentProject, update]);
 
   if (isLoading)
     return (
@@ -109,6 +117,7 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
         </BreadcrumbList>
       </Breadcrumb>
     );
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -128,7 +137,7 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
             <ChevronDownIcon />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-full ">
-            {projects!.result?.map((item, index) => (
+            {projects?.map((item, index) => (
               <div key={item.name}>
                 <DropdownMenuItem className="py-2 w-full px-3">
                   <Link
@@ -138,9 +147,7 @@ export const ProjectBreadcrumb = ({ path }: { path: string }) => {
                     {item.name}
                   </Link>
                 </DropdownMenuItem>
-                {index !== projects!.result.length - 1 && (
-                  <DropdownMenuSeparator />
-                )}
+                {index !== projects!.length - 1 && <DropdownMenuSeparator />}
               </div>
             ))}
           </DropdownMenuContent>

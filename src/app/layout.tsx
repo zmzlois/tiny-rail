@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { cn } from "@/lib/utils";
 import QueryProvider from "@/components/query-provider";
-
+import { Toaster } from "@/components/ui/sonner";
 import getUser from "@/server/auth";
 import { permanentRedirect, redirect } from "next/navigation";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -30,6 +30,7 @@ export default async function RootLayout({
         <QueryProvider>
           <Header user={user} />
           {children}
+          <Toaster />
           <ReactQueryDevtools initialIsOpen />
         </QueryProvider>
       </body>
