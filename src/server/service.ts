@@ -27,21 +27,32 @@ type Source = {
     name: DatabaseSource
 }
 
-export async function createServiceInDb(input: { externalId: string, projectId: string, name: string }) {
+export async function createOrUpdateServiceInDb(input: { externalId: string, projectId: string, name: string, url: string | null }) {
 
     if (!input.externalId) throw new CustomError("input.externalId not found")
     if (!input.projectId) throw new CustomError("input.projectId not found")
-    if (!input.name) throw new CustomError("input.name not found")
+    const findService = await db.select().from(services).where(eq(services.externalId, input.externalId)).then((res) => res[0])
 
-    const environment = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0])
+    const environment = await getProjectEnvironment({ projectId: input.projectId }).then((res) => res)
 
+    if (!findService) {
+        return db.insert(services).values({
+            externalId: input.externalId,
+            projectId: input.projectId,
+            environmentId: environment.id,
+            name: input.name,
+            url: input.url ?? ""
+        }).returning().then((res) => res)
 
-    return db.insert(services).values({
+    }
+
+    return db.update(services).set({
         externalId: input.externalId,
-        environmentId: environment.id,
         projectId: input.projectId,
+        environmentId: environment.id,
         name: input.name,
-    }).returning().then((res) => res[0])
+        url: input.url ?? ""
+    }).where(eq(services.externalId, input.externalId)).returning().then((res) => res)
 }
 
 // edge {
@@ -80,6 +91,9 @@ export async function createService(input: { source: Source, projectId: string |
     const environment = await getProjectEnvironment({ projectId: input.projectId })
 
 
+
+
+
     if (input.source.type === "image") {
 
 
@@ -100,14 +114,25 @@ export async function createService(input: { source: Source, projectId: string |
                     },
 
                 },
-                __scalar: true
+                __scalar: true,
+                deployments: {
+                    edges: {
+                        node: {
+                            staticUrl: true,
+                            __scalar: true
+                        }
+                    }
+                }
             }
         })
 
-        return createServiceInDb({
+        const url = newService.serviceCreate.deployments.edges.map((res) => res.node.staticUrl)[0]
+
+        return createOrUpdateServiceInDb({
             externalId: newService.serviceCreate.id,
             projectId: input.projectId,
-            name: input.source.name
+            name: input.source.name,
+            url: url ?? ""
         })
 
 
@@ -128,16 +153,25 @@ export async function createService(input: { source: Source, projectId: string |
                     },
 
                 },
-                __scalar: true
+                __scalar: true,
+                deployments: {
+                    edges: {
+                        node: {
+                            staticUrl: true,
+                            __scalar: true
+                        }
+                    }
+                }
             }
 
         })
+        const url = newService.serviceCreate.deployments.edges.map((res) => res.node.staticUrl)[0]
 
-        const findEnvironment = await db.select().from(environments).where(eq(environments.projectId, input.projectId)).then((res) => res[0])
-        return createServiceInDb({
+        return createOrUpdateServiceInDb({
             externalId: newService.serviceCreate.id,
             projectId: input.projectId,
-            name: input.source.name
+            name: input.source.name,
+            url: url ?? ""
         })
     }
 
