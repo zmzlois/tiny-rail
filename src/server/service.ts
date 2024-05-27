@@ -42,7 +42,7 @@ export async function createOrUpdateServiceInDb(input: { externalId: string, pro
             environmentId: environment.id,
             name: input.name,
             url: input.url ?? ""
-        }).returning().then((res) => res)
+        }).returning().then((res) => res[0])
 
     }
 
@@ -52,7 +52,7 @@ export async function createOrUpdateServiceInDb(input: { externalId: string, pro
         environmentId: environment.id,
         name: input.name,
         url: input.url ?? ""
-    }).where(eq(services.externalId, input.externalId)).returning().then((res) => res)
+    }).where(eq(services.externalId, input.externalId)).returning().then((res) => res[0])
 }
 
 // edge {
